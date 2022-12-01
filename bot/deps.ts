@@ -1,0 +1,1 @@
+export type { RESTPostAPIApplicationCommandsJSONBody} from "https://deno.land/x/discord_api_types@0.37.19/v10.ts"
