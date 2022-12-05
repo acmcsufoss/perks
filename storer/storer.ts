@@ -15,7 +15,7 @@ export const SQL_TABLE_AWARDS = `CREATE TABLE IF NOT EXISTS awards (
   id SERIAL PRIMARY KEY,
   awarder VARCHAR(255) NOT NULL,
   awardee VARCHAR(255) NOT NULL,
-  mint_id INTEGER NOT NULL REFERENCES perks(id) ON DELETE CASCADE,
+  mint_id VARCHAR(255) NOT NULL REFERENCES perks(id) ON DELETE CASCADE,
 );`;
 
 export interface MintQuery {
@@ -33,12 +33,15 @@ export const SQL_QUERY_MINT = `INSERT INTO perks (
   max_uses,
   milliseconds,
   available,
+  minted_at,
+  activated,
 ) VALUES (
   $1,
   $2,
   $3,
   $4,
-  $5,
+  NOW(),
+  NULL,
 ) RETURNING *;`;
 
 export type UnmintQuery = Pick<MintedPerk, "id">;
@@ -50,7 +53,7 @@ export const SQL_QUERY_UNMINT = `DELETE FROM perks
 export interface AwardQuery {
   awarder: string;
   awardee: string;
-  mint_id: number;
+  mint_id: string;
 }
 
 export type StoredAward = Award;
@@ -59,10 +62,12 @@ export const SQL_QUERY_AWARD = `INSERT INTO awards (
   awarder,
   awardee,
   mint_id,
+  awarded_at,
 ) VALUES (
   $1,
   $2,
   $3,
+  NOW(),
 ) RETURNING *;`;
 
 export type RevokeQuery = Pick<Award, "id">;
@@ -98,15 +103,34 @@ WHERE
   $1 IS NULL OR
   awards.awardee = $1;`;
 
-export interface UseQuery {
-  id: number;
+export interface PreuseQuery {
+  mint_id: string;
 }
+
+export const SQL_QUERY_PREUSE = `SELECT
+  perks.id AS perk_id,
+  perks.type AS perk_type,
+  perks.minter AS perk_minter,
+  perks.max_uses AS perk_max_uses,
+  perks.milliseconds AS perk_milliseconds,
+  perks.available AS perk_available,
+  perks.activated AS perk_activated,
+  awards.id AS award_id,
+  awards.awarder AS award_awarder,
+  awards.awardee AS award_awardee,
+  awards.mint_id AS award_mint_id
+FROM awards
+INNER JOIN perks ON perks.id = awards.mint_id
+WHERE
+  perks.id = $1;`;
+
+export type UseQuery = PreuseQuery;
 
 export const SQL_QUERY_USE = `UPDATE perks SET
   activated = NOW() IF available == max_uses
   available = available - 1
 WHERE
-  id = $1 AND
+  id = $1
 RETURNING *;`;
 
 /**
@@ -118,6 +142,7 @@ export interface Storer {
   doAwardQuery: (q: AwardQuery) => Promise<StoredAward>;
   doRevokeQuery: (q: RevokeQuery) => Promise<StoredAward>;
   doListQuery: (q: ListQuery) => Promise<StoredSummary[]>;
+  doPreuseQuery: (q: PreuseQuery) => Promise<StoredSummary>;
   doUseQuery: (q: UseQuery) => Promise<StoredPerk>;
 
   createTables: () => Promise<void>;

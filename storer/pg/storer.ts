@@ -2,6 +2,7 @@ import {
   SQL_QUERY_AWARD,
   SQL_QUERY_LIST,
   SQL_QUERY_MINT,
+  SQL_QUERY_PREUSE,
   SQL_QUERY_REVOKE,
   SQL_QUERY_UNMINT,
   SQL_QUERY_USE,
@@ -13,6 +14,7 @@ import type {
   AwardQuery,
   ListQuery,
   MintQuery,
+  PreuseQuery,
   RevokeQuery,
   StoredAward,
   StoredPerk,
@@ -25,9 +27,7 @@ import type {
 import type { Pooler } from "./pooler.ts";
 
 export class PgStorer implements Storer {
-  constructor(
-    private readonly pool: Pooler,
-  ) {}
+  constructor(private readonly pool: Pooler) {}
 
   public async doMintQuery(q: MintQuery): Promise<StoredPerk> {
     const client = await this.pool.connect();
@@ -108,14 +108,12 @@ export class PgStorer implements Storer {
     }
   }
 
-  public async doUseQuery(q: UseQuery): Promise<StoredPerk> {
+  public async doPreuseQuery(q: PreuseQuery): Promise<StoredSummary> {
     const client = await this.pool.connect();
     try {
-      const result = await client.queryObject<StoredPerk>(
-        SQL_QUERY_USE,
-        [
-          q.id,
-        ],
+      const result = await client.queryObject<StoredSummary>(
+        SQL_QUERY_PREUSE,
+        [q.mint_id],
       );
       const row = result.rows[0];
       console.log("TODO: DELETE ME", { row });
@@ -125,16 +123,27 @@ export class PgStorer implements Storer {
     }
   }
 
-  /**
-   * @todo Refactor to a method "overwrite" that creates the tables if they
-   * don't exist and applies the migrations if the schema version is out of
-   * date.
-   */
+  public async doUseQuery(q: UseQuery): Promise<StoredPerk> {
+    const client = await this.pool.connect();
+    try {
+      const result = await client.queryObject<StoredPerk>(
+        SQL_QUERY_USE,
+        [q.mint_id],
+      );
+      const row = result.rows[0];
+      console.log("TODO: DELETE ME", { row });
+      return row;
+    } finally {
+      client.release();
+    }
+  }
+
   public async createTables(): Promise<void> {
     const client = await this.pool.connect();
     try {
-      await client.queryObject(SQL_TABLE_PERKS);
-      await client.queryObject(SQL_TABLE_AWARDS);
+      await Promise.all([SQL_TABLE_PERKS, SQL_TABLE_AWARDS].map((sql) => {
+        return client.queryObject(sql);
+      }));
     } finally {
       client.release();
     }

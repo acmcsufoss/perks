@@ -1,6 +1,10 @@
-import { InteractionResponseType, InteractionType } from "../../../deps.ts";
-
-import type { Storer } from "../../../../storer/mod.ts";
+import type { APIInteraction } from "../../../deps.ts";
+import {
+  InteractionResponseType,
+  InteractionType,
+  isChatInputApplicationCommandInteraction,
+} from "../../../deps.ts";
+import { Client } from "../../../../perks/client/mod.ts";
 import type { Handler } from "../mod.ts";
 
 import { json, nacl, validateRequest } from "./deps.ts";
@@ -16,7 +20,7 @@ const RES_INVALID = json({ error: "Invalid request" }, { status: 401 });
 export class DefaultHandler implements Handler {
   constructor(
     // TODO: Use store to persist data.
-    private readonly store: Storer,
+    private readonly client: Client,
     private readonly publicKey: string,
   ) {}
 
@@ -27,15 +31,24 @@ export class DefaultHandler implements Handler {
     }
 
     // Parse the incoming request as JSON.
-    const { type = 0, data = { options: [] } } = JSON.parse(body);
-
-    switch (type) {
+    const request = await JSON.parse(body) as APIInteraction;
+    switch (request.type) {
       case InteractionType.Ping: {
         return RES_PONG;
       }
 
       case InteractionType.ApplicationCommand: {
-        return await handle(data);
+        if (!isChatInputApplicationCommandInteraction(request)) {
+          return RES_INVALID;
+        }
+
+        try {
+          const response = await handle(this.client, request);
+          return new Response(JSON.stringify(response));
+        } catch (err) {
+          console.error(err);
+          return RES_INVALID;
+        }
       }
 
       default: {

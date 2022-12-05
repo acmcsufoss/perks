@@ -3,7 +3,7 @@ import { ApplicationCommandOptionType } from "../../../deps.ts";
 
 export const LIST = "list";
 export const LIST_DESCRIPTION = "List perks";
-export const LIST_AWARD_MEMBER = "Awardee";
+export const LIST_AWARD_MEMBER = "awardee";
 export const LIST_AWARD_MEMBER_DESCRIPTION = "The member to list perks for";
 
 /** Example: /perks list <awardee_id?> */

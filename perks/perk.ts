@@ -7,6 +7,7 @@ export interface Award {
   awarder: string; // The authorized ID of the user who granted the award.
   awardee: string; // The ID of the member who received the award.
   mint_id: string; // ID of minted perk awarded to grantee.
+  awarded_at: string; // Timestamp the award was granted.
 }
 
 /**

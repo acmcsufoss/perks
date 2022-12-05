@@ -3,9 +3,13 @@ import "https://deno.land/std@0.167.0/dotenv/load.ts";
 export const ENV = {
   publicKey: Deno.env.get("PUBLIC_KEY") || "",
   guildID: Deno.env.get("GUILD_ID") || "",
+  botID: Deno.env.get("BOT_ID") || "",
   botToken: Deno.env.get("BOT_TOKEN") || "",
   databaseURL: Deno.env.get("DATABASE_URL") || "",
   databasePass: Deno.env.get("DATABASE_PASS") || "",
+
+  // Optional environment variables.
+  registerPath: Deno.env.get("REGISTER_PATH") || "/__register",
 } as const;
 
 export type Env = typeof ENV;

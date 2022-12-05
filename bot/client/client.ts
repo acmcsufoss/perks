@@ -1,10 +1,10 @@
 import type { RESTPostAPIApplicationCommandsJSONBody } from "../deps.ts";
+import { contentType } from "../deps.ts";
 
 const DISCORD_API_URL = "https://discord.com/api/v8";
 
-export interface OverwriteConfig {
-  publicKey: string;
-  guildID: string;
+interface RegisterInit {
+  botID: string;
   botToken: string;
   body: RESTPostAPIApplicationCommandsJSONBody;
 }
@@ -21,47 +21,36 @@ export interface OverwriteConfig {
  * -H "Authorization: Bot $BOT_TOKEN" \
  * -d '{"name":"hello","description":"Greet a person","options":[{"name":"name","description":"The name of the person","type":3,"required":true}]}' \
  * "https://discord.com/api/v8/applications/$CLIENT_ID/commands"
+ * ```
  */
 export async function overwrite(
-  { publicKey, guildID, botToken, body }: OverwriteConfig,
-) {
-  const url = makeRegisterGuildCommandsURL(publicKey, guildID);
-  const response = await fetch(url.toString(), {
+  { botID, botToken, body }: RegisterInit,
+): Promise<Response> {
+  const url = makeRegisterGuildCommandsURL(botID);
+  const r = await fetch(url.toString(), {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
+      "Content-Type": contentType("json"),
       "Authorization": makeBotAuthorization(botToken),
     },
     body: JSON.stringify(body),
   });
-  if (!response.ok) {
+  if (!r.ok) {
+    console.error(JSON.stringify(await r.json(), null, 2));
     throw new Error(
-      `Failed to overwrite Discord Slash Commands: ${response.status} ${response.statusText}`,
+      `Failed to overwrite Discord Slash Commands: ${r.status} ${r.statusText}`,
     );
   }
-  const result = await response.json();
-  console.log({ result });
+
+  return r;
 }
 
 function makeRegisterGuildCommandsURL(
   clientID: string,
-  guildID: string,
   base = DISCORD_API_URL,
 ) {
-  return new URL(`${base}/applications/${clientID}/guilds/${guildID}/commands`);
+  return new URL(`${base}/applications/${clientID}/commands`);
 }
-
-// TODO: Expose a function to delete the commands.
-// function makeDeleteGuildCommandsURL(
-//   clientID: string,
-//   guildID: string,
-//   commandID: string,
-//   base = DISCORD_API_URL,
-// ) {
-//   return new URL(
-//     `${base}/applications/${clientID}/guilds/${guildID}/commands/${commandID}`,
-//   );
-// }
 
 function makeBotAuthorization(botToken: string) {
   return botToken.startsWith("Bot ") ? botToken : `Bot ${botToken}`;
