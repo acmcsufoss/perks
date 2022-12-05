@@ -14,7 +14,10 @@ Set of Discord Application Commands to reward and claim coupons.
 
 ```env
 PUBLIC_KEY=""
+GUILD_ID=""
 BOT_TOKEN=""
+DATABASE_URL=""
+DATABASE_PASS=""
 ```
 
 2. Run the bot server:
@@ -37,6 +40,6 @@ deno install -rf --allow-read=. --allow-write=. --allow-net https://deno.land/x/
 udd **/*.ts
 ```
 
-----
+---
 
 Created with 💖 by [**@EthanThatOneKid**](https://etok.codes/)

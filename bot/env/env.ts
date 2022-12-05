@@ -1,3 +1,5 @@
+import "https://deno.land/std@0.167.0/dotenv/load.ts";
+
 export const ENV = {
   publicKey: Deno.env.get("PUBLIC_KEY") || "",
   guildID: Deno.env.get("GUILD_ID") || "",

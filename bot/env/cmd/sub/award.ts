@@ -1,5 +1,5 @@
-import type { APIApplicationCommandOption } from "../../deps.ts";
-import { ApplicationCommandOptionType } from "../../deps.ts";
+import type { APIApplicationCommandOption } from "../../../deps.ts";
+import { ApplicationCommandOptionType } from "../../../deps.ts";
 
 export const AWARD = "award";
 export const AWARD_DESCRIPTION = "Award a perk to a member";

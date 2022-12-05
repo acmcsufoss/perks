@@ -1,5 +1,5 @@
-import type { APIApplicationCommandOption } from "../../deps.ts";
-import { ApplicationCommandOptionType } from "../../deps.ts";
+import type { APIApplicationCommandOption } from "../../../deps.ts";
+import { ApplicationCommandOptionType } from "../../../deps.ts";
 
 export const MINT = "mint";
 export const MINT_DESCRIPTION = "Mint a new perk";
