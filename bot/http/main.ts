@@ -31,27 +31,7 @@ const client = new Client(store, registry);
 // Create a new handler.
 const handler = new DefaultHandler(store, env.publicKey);
 
-// Overwrite application commands.
-// TODO: Call this from within a GitHub workflow.
-await overwrite({ ...env, body: CMD_PERKS });
-
 serve(async (r: Request) => {
-  const u = new URL(r.url);
-
-  switch (u.pathname) {
-    case env.registerPath: {
-      const opts = { ...env, body: CMD_PERKS };
-      const guildID = u.searchParams.get("guild_id");
-      if (guildID) {
-        opts.guildID = guildID;
-      }
-
-      return await overwrite(opts);
-    }
-
-    default: {
-      // Handle the request.
-      return await handler.handle(r);
-    }
-  }
+  // Handle the request.
+  return await handler.handle(r);
 });
