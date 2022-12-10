@@ -1,4 +1,7 @@
-import type { APIApplicationCommandOption } from "../../../deps.ts";
+import type {
+  APIApplicationCommandOption,
+  APIApplicationCommandOptionChoice,
+} from "../../../deps.ts";
 import { ApplicationCommandOptionType } from "../../../deps.ts";
 
 import { PROVIDER_NAMES } from "../../providers/mod.ts";
