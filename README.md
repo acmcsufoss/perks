@@ -56,6 +56,12 @@ ngrok http 8000
 <img width="483" alt="image" src="https://user-images.githubusercontent.com/31261035/206064674-510f41f7-06c2-4899-8ace-b9451a8b0ad8.png">
 </a>
 
+Our development invite link:
+
+```url
+https://discord.com/api/oauth2/authorize?client_id=1048046283367133246&permissions=2733747599424&scope=bot
+```
+
 ### Update dependencies
 
 1. Install the UDD tool:

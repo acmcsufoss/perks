@@ -6,7 +6,7 @@ const DISCORD_API_URL = "https://discord.com/api/v8";
 interface RegisterInit {
   botID: string;
   botToken: string;
-  body: RESTPostAPIApplicationCommandsJSONBody;
+  app: RESTPostAPIApplicationCommandsJSONBody;
 }
 
 /**
@@ -24,7 +24,7 @@ interface RegisterInit {
  * ```
  */
 export async function overwrite(
-  { botID, botToken, body }: RegisterInit,
+  { botID, botToken, app }: RegisterInit,
 ): Promise<Response> {
   const url = makeRegisterGuildCommandsURL(botID);
   const r = await fetch(url.toString(), {
@@ -33,7 +33,7 @@ export async function overwrite(
       "Content-Type": contentType("json"),
       "Authorization": makeBotAuthorization(botToken),
     },
-    body: JSON.stringify(body),
+    body: JSON.stringify(app),
   });
   if (!r.ok) {
     console.error(JSON.stringify(await r.json(), null, 2));

@@ -1,9 +1,10 @@
+import type { Provider } from "../../../perks/provider/mod.ts";
 import type { APIApplicationCommandOptionChoice } from "../../deps.ts";
 
 import { Breakfast } from "./breakfast/mod.ts";
 
-export const perks = [
-  Breakfast,
+export const perks: Provider[] = [
+  new Breakfast(),
 ];
 
 /**

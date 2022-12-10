@@ -27,7 +27,8 @@ export interface MintQuery {
 
 export type StoredPerk = MintedPerk;
 
-export const SQL_QUERY_MINT = `INSERT INTO perks (
+export const SQL_QUERY_MINT = () =>
+  `INSERT INTO perks (
   type,
   minter,
   max_uses,
@@ -46,8 +47,9 @@ export const SQL_QUERY_MINT = `INSERT INTO perks (
 
 export type UnmintQuery = Pick<MintedPerk, "id">;
 
-export const SQL_QUERY_UNMINT = `DELETE FROM perks
-  WHERE id = $1
+export const SQL_QUERY_UNMINT = () =>
+  `DELETE FROM perks
+WHERE id = $1
   RETURNING *;`;
 
 export interface AwardQuery {
@@ -58,7 +60,8 @@ export interface AwardQuery {
 
 export type StoredAward = Award;
 
-export const SQL_QUERY_AWARD = `INSERT INTO awards (
+export const SQL_QUERY_AWARD = () =>
+  `INSERT INTO awards (
   awarder,
   awardee,
   mint_id,
@@ -72,7 +75,8 @@ export const SQL_QUERY_AWARD = `INSERT INTO awards (
 
 export type RevokeQuery = Pick<Award, "id">;
 
-export const SQL_QUERY_REVOKE = `DELETE FROM awards
+export const SQL_QUERY_REVOKE = () =>
+  `DELETE FROM awards
   WHERE id = $1
   RETURNING *;`;
 
@@ -85,7 +89,8 @@ export interface StoredSummary {
   award: StoredAward;
 }
 
-export const SQL_QUERY_LIST = `SELECT
+export const SQL_QUERY_LIST = () =>
+  `SELECT
   perks.id AS perk_id,
   perks.type AS perk_type,
   perks.minter AS perk_minter,
@@ -107,7 +112,8 @@ export interface PreuseQuery {
   mint_id: string;
 }
 
-export const SQL_QUERY_PREUSE = `SELECT
+export const SQL_QUERY_PREUSE = () =>
+  `SELECT
   perks.id AS perk_id,
   perks.type AS perk_type,
   perks.minter AS perk_minter,
@@ -126,7 +132,8 @@ WHERE
 
 export type UseQuery = PreuseQuery;
 
-export const SQL_QUERY_USE = `UPDATE perks SET
+export const SQL_QUERY_USE = () =>
+  `UPDATE perks SET
   activated = NOW() IF available == max_uses
   available = available - 1
 WHERE

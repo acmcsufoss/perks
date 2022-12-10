@@ -1,6 +1,6 @@
 import type { Storer } from "../../storer/mod.ts";
-import { MintedPerk } from "../perk.ts";
-import type { Provider } from "../provider/provider.ts";
+import { MintedPerk } from "../mod.ts";
+import { Registry } from "../provider/registry/mod.ts";
 
 import type {
   AwardRequest,
@@ -21,7 +21,7 @@ import type {
 export class Client implements ClientInterface {
   constructor(
     public readonly storer: Storer,
-    public readonly provider: Provider,
+    public readonly registry: Registry,
   ) {}
 
   public async mint(r: MintRequest): Promise<MintResponse> {
@@ -113,7 +113,12 @@ export class Client implements ClientInterface {
       throw new Error("Perk has already been consumed");
     }
 
-    const response = await this.provider.use({ ...preused });
+    const provider = this.registry.get(preused.perk.type);
+    if (!provider) {
+      throw new Error("Perk provider not found");
+    }
+
+    const response = await provider.use({ ...preused });
     if (!response) {
       throw new Error("Perk not used");
     }

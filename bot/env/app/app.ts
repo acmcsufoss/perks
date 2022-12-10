@@ -12,9 +12,9 @@ export const PERKS_DESCRIPTION =
   "Set of commands to mint, award, and use perks";
 
 /**
- * CMD_PERKS is the top-level command for the Perks Application Commands.
+ * APP_PERKS is the top-level command for the Perks Application Commands.
  */
-export const CMD_PERKS: RESTPostAPIApplicationCommandsJSONBody = {
+export const APP_PERKS: RESTPostAPIApplicationCommandsJSONBody = {
   name: PERKS,
   description: PERKS_DESCRIPTION,
   options: [SUB_MINT, SUB_UNMINT, SUB_AWARD, SUB_USE, SUB_REVOKE, SUB_LIST],

@@ -13,16 +13,16 @@ import {
   MINT,
   MINT_MAX_USES,
   MINT_MILLISECONDS,
-} from "../../../env/cmd/sub/mint.ts";
-import { UNMINT, UNMINT_MINT_ID } from "../../../env/cmd/sub/unmint.ts";
+} from "../../../env/app/sub/mint.ts";
+import { UNMINT, UNMINT_MINT_ID } from "../../../env/app/sub/unmint.ts";
 import {
   AWARD,
   AWARD_MEMBER,
   AWARD_MINT_ID,
-} from "../../../env/cmd/sub/award.ts";
-import { REVOKE, REVOKE_AWARD_ID } from "../../../env/cmd/sub/revoke.ts";
-import { LIST, LIST_AWARD_MEMBER } from "../../../env/cmd/sub/list.ts";
-import { USE, USE_MINT_ID, USE_QUERY } from "../../../env/cmd/sub/use.ts";
+} from "../../../env/app/sub/award.ts";
+import { REVOKE, REVOKE_AWARD_ID } from "../../../env/app/sub/revoke.ts";
+import { LIST, LIST_AWARD_MEMBER } from "../../../env/app/sub/list.ts";
+import { USE, USE_MINT_ID, USE_QUERY } from "../../../env/app/sub/use.ts";
 
 export async function handle(
   client: Client,
@@ -37,7 +37,8 @@ export async function handle(
     throw new Error("Invalid option type");
   }
 
-  if (!interaction.user) {
+  if (!interaction.member) {
+    console.log({ interaction });
     throw new Error("No user provided");
   }
 
@@ -48,7 +49,7 @@ export async function handle(
     case MINT: {
       const result = await client.mint({
         type: name,
-        minter: interaction.user.id,
+        minter: interaction.member.user.id,
         max_uses: Number(
           options?.find((o) => o.name === MINT_MAX_USES)?.value,
         ),

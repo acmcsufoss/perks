@@ -5,10 +5,9 @@ import { postgres, serve } from "./deps.ts";
 
 import { PgStorer } from "../../storer/pg/mod.ts";
 import { mustEnv } from "../env/mod.ts";
-import { CMD_PERKS } from "../env/cmd/mod.ts";
-import { perks /*defaultRegistry*/ } from "../env/providers/breakfast/mod.ts";
-// TODO: Shit's broken.
-import { Registry$1 } from "../../perks/provider/registry/registry";
+import { APP_PERKS } from "../env/app/mod.ts";
+import { perks } from "../env/providers/mod.ts";
+import { Registry } from "../../perks/provider/registry/mod.ts";
 import { overwrite } from "../client/client.ts";
 import { DefaultHandler } from "./handler/default/handler.ts";
 import { Client } from "../../perks/client/client.ts";
@@ -23,13 +22,16 @@ const pool = new postgres.Pool(env.databaseURL, 3, true);
 const store = new PgStorer(pool);
 
 // Create a Perks provider registry.
-const registry = new ProviderRegistry(perks);
+const registry = new Registry(perks);
 
 // Create a Perks client.
 const client = new Client(store, registry);
 
+// Overwrite the Discord Application Command.
+overwrite({ ...env, app: APP_PERKS });
+
 // Create a new handler.
-const handler = new DefaultHandler(store, env.publicKey);
+const handler = new DefaultHandler(client, env.publicKey);
 
 serve(async (r: Request) => {
   // Handle the request.

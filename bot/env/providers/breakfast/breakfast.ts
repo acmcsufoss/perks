@@ -6,12 +6,13 @@ import type {
   ProviderRequest,
 } from "../../../../perks/provider/mod.ts";
 
-export class Breakfast implements Provider {
-  public readonly name = "breakfast";
+export const BREAKFAST = "breakfast";
 
-  // TODO: Figure out the only properties we want to return.
+export class Breakfast implements Provider {
+  public readonly name = BREAKFAST;
+
   public async use(r: ProviderRequest): Promise<APIInteractionResponse> {
-    const food = await pickRandomBreakfastEmoji();
+    const food = await fetchRandomBreakfastEmoji();
     return Promise.resolve({
       type: InteractionResponseType.ChannelMessageWithSource,
       data: {
@@ -30,7 +31,7 @@ Here is your breakfast: ${food}`,
 
 const randomBreakfastEmoji = ["🥞", "🥓", "🍳", "🥐", "🥯"];
 
-function pickRandomBreakfastEmoji(): Promise<string> {
+function fetchRandomBreakfastEmoji(): Promise<string> {
   return Promise.resolve(
     randomBreakfastEmoji[~~(Math.random() * randomBreakfastEmoji.length)],
   );
