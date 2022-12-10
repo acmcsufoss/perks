@@ -33,7 +33,7 @@ export class PgStorer implements Storer {
     const client = await this.pool.connect();
     try {
       const result = await client.queryObject<StoredPerk>(
-        SQL_QUERY_MINT,
+        SQL_QUERY_MINT(q),
         [
           q.type,
           q.minter,
@@ -53,7 +53,7 @@ export class PgStorer implements Storer {
   public async doUnmintQuery(q: UnmintQuery): Promise<StoredPerk> {
     const client = await this.pool.connect();
     try {
-      const result = await client.queryObject<StoredPerk>(SQL_QUERY_UNMINT, [
+      const result = await client.queryObject<StoredPerk>(SQL_QUERY_UNMINT(q), [
         q.id,
       ]);
       const row = result.rows[0];
@@ -68,7 +68,7 @@ export class PgStorer implements Storer {
     const client = await this.pool.connect();
     try {
       const result = await client.queryObject<StoredAward>(
-        SQL_QUERY_AWARD,
+        SQL_QUERY_AWARD(q),
         [q.mint_id, q.awardee, q.awarder],
       );
       const row = result.rows[0];
@@ -83,7 +83,7 @@ export class PgStorer implements Storer {
     const client = await this.pool.connect();
     try {
       const result = await client.queryObject<StoredAward>(
-        SQL_QUERY_REVOKE,
+        SQL_QUERY_REVOKE(q),
         [q.id],
       );
       const row = result.rows[0];
@@ -97,9 +97,12 @@ export class PgStorer implements Storer {
   public async doListQuery(q: ListQuery): Promise<StoredSummary[]> {
     const client = await this.pool.connect();
     try {
-      const result = await client.queryObject<StoredSummary>(SQL_QUERY_LIST, [
-        q.awardee,
-      ]);
+      const result = await client.queryObject<StoredSummary>(
+        SQL_QUERY_LIST(q),
+        [
+          q.awardee,
+        ],
+      );
       const rows = result.rows;
       console.log("TODO: DELETE ME", { rows });
       return rows;
@@ -112,7 +115,7 @@ export class PgStorer implements Storer {
     const client = await this.pool.connect();
     try {
       const result = await client.queryObject<StoredSummary>(
-        SQL_QUERY_PREUSE,
+        SQL_QUERY_PREUSE(q),
         [q.mint_id],
       );
       const row = result.rows[0];
@@ -127,7 +130,7 @@ export class PgStorer implements Storer {
     const client = await this.pool.connect();
     try {
       const result = await client.queryObject<StoredPerk>(
-        SQL_QUERY_USE,
+        SQL_QUERY_USE(q),
         [q.mint_id],
       );
       const row = result.rows[0];

@@ -8,7 +8,7 @@ import {
   InteractionResponseType,
 } from "../../../deps.ts";
 
-import type { Client, UseRequest } from "../../../../perks/client/mod.ts";
+import type { Engine, UseRequest } from "../../../../perks/engine/mod.ts";
 import {
   MINT,
   MINT_MAX_USES,
@@ -25,7 +25,7 @@ import { LIST, LIST_AWARD_MEMBER } from "../../../env/app/sub/list.ts";
 import { USE, USE_MINT_ID, USE_QUERY } from "../../../env/app/sub/use.ts";
 
 export async function handle(
-  client: Client,
+  engine: Engine,
   interaction: APIChatInputApplicationCommandInteraction,
 ): Promise<APIInteractionResponse> {
   if (!interaction.data.options || interaction.data.options.length === 0) {
@@ -47,7 +47,7 @@ export async function handle(
 
   switch (name) {
     case MINT: {
-      const result = await client.mint({
+      const result = await engine.mint({
         type: name,
         minter: interaction.member.user.id,
         max_uses: Number(
@@ -72,7 +72,7 @@ export async function handle(
         throw new Error("No ID provided");
       }
 
-      const result = await client.unmint({ id: String(id) });
+      const result = await engine.unmint({ id: String(id) });
       return {
         type: InteractionResponseType.ChannelMessageWithSource,
         data: {
@@ -92,7 +92,7 @@ export async function handle(
         throw new Error("No member provided");
       }
 
-      const result = await client.award({
+      const result = await engine.award({
         mint_id: String(id),
         awarder: interaction.user?.id ?? "0",
         awardee: String(awardee),
@@ -112,7 +112,7 @@ export async function handle(
         throw new Error("No ID provided");
       }
 
-      const result = await client.revoke({ award_id: String(id) });
+      const result = await engine.revoke({ award_id: String(id) });
       return {
         type: InteractionResponseType.ChannelMessageWithSource,
         data: {
@@ -124,7 +124,7 @@ export async function handle(
     case LIST: {
       const id = options?.find((o) => o.name === LIST_AWARD_MEMBER)?.value;
       const request = id ? { awardee: String(id) } : {};
-      const result = await client.list(request);
+      const result = await engine.list(request);
       return {
         type: InteractionResponseType.ChannelMessageWithSource,
         data: {
@@ -147,7 +147,7 @@ export async function handle(
         request.query = String(query);
       }
 
-      const result = await client.use(request);
+      const result = await engine.use(request);
       return result.data;
     }
 

@@ -4,7 +4,7 @@ import {
   InteractionType,
   isChatInputApplicationCommandInteraction,
 } from "../../../deps.ts";
-import { Client } from "../../../../perks/client/mod.ts";
+import type { Engine } from "../../../../perks/engine/mod.ts";
 import type { Handler } from "../mod.ts";
 
 import { json, nacl, validateRequest } from "./deps.ts";
@@ -19,8 +19,7 @@ const RES_INVALID = json({ error: "Invalid request" }, { status: 401 });
 
 export class DefaultHandler implements Handler {
   constructor(
-    // TODO: Use store to persist data.
-    private readonly client: Client,
+    private readonly engine: Engine,
     private readonly publicKey: string,
   ) {}
 
@@ -43,7 +42,7 @@ export class DefaultHandler implements Handler {
         }
 
         try {
-          const response = await handle(this.client, request);
+          const response = await handle(this.engine, request);
           return new Response(JSON.stringify(response));
         } catch (err) {
           console.error(err);

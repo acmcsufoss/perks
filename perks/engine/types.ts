@@ -2,9 +2,9 @@ import type { APIInteractionResponse } from "../../bot/deps.ts";
 import type { Award, MintedPerk } from "../mod.ts";
 
 /**
- * ClientInterface is what authorized users use to mint and award perks.
+ * EngineInterface is what authorized users use to mint and award perks.
  */
-export interface ClientInterface {
+export interface EngineInterface {
   /** example mint: /perks mint <perk_name> <max_uses?> <milliseconds?> */
   mint: (r: MintRequest) => Promise<MintResponse>;
 

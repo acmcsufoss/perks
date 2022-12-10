@@ -27,7 +27,7 @@ export interface MintQuery {
 
 export type StoredPerk = MintedPerk;
 
-export const SQL_QUERY_MINT = () =>
+export const SQL_QUERY_MINT = (q: MintQuery) =>
   `INSERT INTO perks (
   type,
   minter,
@@ -37,19 +37,19 @@ export const SQL_QUERY_MINT = () =>
   minted_at,
   activated,
 ) VALUES (
-  $1,
-  $2,
-  $3,
-  $4,
+  ${JSON.stringify(q.type)},
+  ${JSON.stringify(q.minter)},
+  ${q.max_uses},
+  ${q.milliseconds},
   NOW(),
   NULL,
 ) RETURNING *;`;
 
 export type UnmintQuery = Pick<MintedPerk, "id">;
 
-export const SQL_QUERY_UNMINT = () =>
+export const SQL_QUERY_UNMINT = (q: UnmintQuery) =>
   `DELETE FROM perks
-WHERE id = $1
+WHERE id = ${q.id}
   RETURNING *;`;
 
 export interface AwardQuery {
@@ -60,24 +60,24 @@ export interface AwardQuery {
 
 export type StoredAward = Award;
 
-export const SQL_QUERY_AWARD = () =>
+export const SQL_QUERY_AWARD = (q: AwardQuery) =>
   `INSERT INTO awards (
   awarder,
   awardee,
   mint_id,
   awarded_at,
 ) VALUES (
-  $1,
-  $2,
-  $3,
+  ${JSON.stringify(q.awarder)},
+  ${JSON.stringify(q.awardee)},
+  ${JSON.stringify(q.mint_id)},
   NOW(),
 ) RETURNING *;`;
 
 export type RevokeQuery = Pick<Award, "id">;
 
-export const SQL_QUERY_REVOKE = () =>
+export const SQL_QUERY_REVOKE = (q: RevokeQuery) =>
   `DELETE FROM awards
-  WHERE id = $1
+WHERE id = ${q.id}
   RETURNING *;`;
 
 export interface ListQuery {
@@ -89,7 +89,7 @@ export interface StoredSummary {
   award: StoredAward;
 }
 
-export const SQL_QUERY_LIST = () =>
+export const SQL_QUERY_LIST = (q: ListQuery) =>
   `SELECT
   perks.id AS perk_id,
   perks.type AS perk_type,
@@ -105,14 +105,14 @@ export const SQL_QUERY_LIST = () =>
 FROM awards
 INNER JOIN perks ON perks.id = awards.mint_id
 WHERE
-  $1 IS NULL OR
-  awards.awardee = $1;`;
+  ${q.awardee ? `awardee = ${JSON.stringify(q.awardee)}` : "TRUE"}
+  awards.awardee = ${JSON.stringify(q.awardee)};`;
 
 export interface PreuseQuery {
   mint_id: string;
 }
 
-export const SQL_QUERY_PREUSE = () =>
+export const SQL_QUERY_PREUSE = (q: PreuseQuery) =>
   `SELECT
   perks.id AS perk_id,
   perks.type AS perk_type,
@@ -128,16 +128,16 @@ export const SQL_QUERY_PREUSE = () =>
 FROM awards
 INNER JOIN perks ON perks.id = awards.mint_id
 WHERE
-  perks.id = $1;`;
+  perks.id = ${JSON.stringify(q.mint_id)};`;
 
 export type UseQuery = PreuseQuery;
 
-export const SQL_QUERY_USE = () =>
+export const SQL_QUERY_USE = (q: UseQuery) =>
   `UPDATE perks SET
   activated = NOW() IF available == max_uses
   available = available - 1
 WHERE
-  id = $1
+  id = ${JSON.stringify(q.mint_id)}
 RETURNING *;`;
 
 /**

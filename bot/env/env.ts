@@ -1,6 +1,7 @@
 import "https://deno.land/std@0.167.0/dotenv/load.ts";
 
 export const ENV = {
+  // Required environment variables.
   publicKey: Deno.env.get("PUBLIC_KEY") || "",
   guildID: Deno.env.get("GUILD_ID") || "",
   botID: Deno.env.get("BOT_ID") || "",

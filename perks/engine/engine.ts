@@ -5,7 +5,7 @@ import { Registry } from "../provider/registry/mod.ts";
 import type {
   AwardRequest,
   AwardResponse,
-  ClientInterface,
+  EngineInterface,
   ListRequest,
   ListResponse,
   MintRequest,
@@ -18,7 +18,7 @@ import type {
   UseResponse,
 } from "./types.ts";
 
-export class Client implements ClientInterface {
+export class Engine implements EngineInterface {
   constructor(
     public readonly storer: Storer,
     public readonly registry: Registry,
