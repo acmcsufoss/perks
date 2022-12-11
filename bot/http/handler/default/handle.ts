@@ -3,10 +3,7 @@ import type {
   APIChatInputApplicationCommandInteraction,
   APIInteractionResponse,
 } from "../../../deps.ts";
-import {
-  ApplicationCommandOptionType,
-  InteractionResponseType,
-} from "../../../deps.ts";
+import { ApplicationCommandOptionType } from "../../../deps.ts";
 
 import type { Engine, UseRequest } from "../../../../perks/engine/mod.ts";
 import {
@@ -23,6 +20,14 @@ import {
 import { REVOKE, REVOKE_AWARD_ID } from "../../../env/app/sub/revoke.ts";
 import { LIST, LIST_AWARD_MEMBER } from "../../../env/app/sub/list.ts";
 import { USE, USE_MINT_ID, USE_QUERY } from "../../../env/app/sub/use.ts";
+import {
+  makeAwardInteractionResponse,
+  makeErrorInteractionResponse,
+  makeListInteractionResponse,
+  makeMintInteractionResponse,
+  makeRevokeInteractionResponse,
+  makeUnmintInteractionResponse,
+} from "./responses.ts";
 
 export async function handle(
   engine: Engine,
@@ -58,12 +63,7 @@ export async function handle(
         ),
       });
 
-      return {
-        type: InteractionResponseType.ChannelMessageWithSource,
-        data: {
-          content: `Minted ${result.type} perk with ID ${result.id}`,
-        },
-      };
+      return makeMintInteractionResponse(result);
     }
 
     case UNMINT: {
@@ -73,12 +73,7 @@ export async function handle(
       }
 
       const result = await engine.unmint({ id: String(id) });
-      return {
-        type: InteractionResponseType.ChannelMessageWithSource,
-        data: {
-          content: `Unminted ${result.type} perk with ID ${result.id}`,
-        },
-      };
+      return makeUnmintInteractionResponse(result);
     }
 
     case AWARD: {
@@ -97,13 +92,7 @@ export async function handle(
         awarder: interaction.user?.id ?? "0",
         awardee: String(awardee),
       });
-      return {
-        type: InteractionResponseType.ChannelMessageWithSource,
-        data: {
-          content:
-            `Awarded perk ${result.mint_id} to ${result.awardee} (award ID: ${result.id})`,
-        },
-      };
+      return makeAwardInteractionResponse(result);
     }
 
     case REVOKE: {
@@ -113,26 +102,14 @@ export async function handle(
       }
 
       const result = await engine.revoke({ award_id: String(id) });
-      return {
-        type: InteractionResponseType.ChannelMessageWithSource,
-        data: {
-          content: `Revoked perk ${result.mint_id} from ${result.awardee}`,
-        },
-      };
+      return makeRevokeInteractionResponse(result);
     }
 
     case LIST: {
       const id = options?.find((o) => o.name === LIST_AWARD_MEMBER)?.value;
       const request = id ? { awardee: String(id) } : {};
       const result = await engine.list(request);
-      return {
-        type: InteractionResponseType.ChannelMessageWithSource,
-        data: {
-          content: result.awards.map((r) =>
-            `${r.perk.type} perk ${r.award.id} (mint ID: ${r.perk.id}; uses remaining: ${r.perk.available}) awarded to ${r.award.awardee} by ${r.award.awarder} at ${r.award.awarded_at}`
-          ).join("\n"),
-        },
-      };
+      return makeListInteractionResponse(result);
     }
 
     case USE: {
@@ -152,12 +129,7 @@ export async function handle(
     }
 
     default: {
-      return {
-        type: InteractionResponseType.ChannelMessageWithSource,
-        data: {
-          content: "Hello World!",
-        },
-      };
+      return makeErrorInteractionResponse("Invalid command. Please try again.");
     }
   }
 }
