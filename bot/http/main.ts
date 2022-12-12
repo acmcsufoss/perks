@@ -21,6 +21,9 @@ const pool = new postgres.Pool(env.databaseURL, 3, true);
 // Implement Storer class.
 const store = new PgStorer(pool);
 
+// Create tables if they don't exist.
+await store.createTables();
+
 // Create a Perks provider registry.
 const registry = new Registry(perks);
 

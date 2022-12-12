@@ -1,7 +1,6 @@
 import type { Award, MintedPerk } from "../perks/mod.ts";
 
 export const SQL_TABLE_PERKS = `CREATE TABLE IF NOT EXISTS perks (
-  id SERIAL PRIMARY KEY,
   type VARCHAR(255) NOT NULL,
   minter VARCHAR(255) NOT NULL,
   minted_at TIMESTAMP NOT NULL DEFAULT NOW(),
@@ -9,13 +8,18 @@ export const SQL_TABLE_PERKS = `CREATE TABLE IF NOT EXISTS perks (
   milliseconds INTEGER NOT NULL,
   available INTEGER NOT NULL,
   activated TIMESTAMP,
+
+  id SERIAL PRIMARY KEY
 );`;
 
 export const SQL_TABLE_AWARDS = `CREATE TABLE IF NOT EXISTS awards (
-  id SERIAL PRIMARY KEY,
   awarder VARCHAR(255) NOT NULL,
   awardee VARCHAR(255) NOT NULL,
-  mint_id VARCHAR(255) NOT NULL REFERENCES perks(id) ON DELETE CASCADE,
+  awarded_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  mint_id INTEGER NOT NULL,
+
+  FOREIGN KEY (mint_id) REFERENCES perks(id) ON DELETE CASCADE,
+  id SERIAL PRIMARY KEY
 );`;
 
 export interface MintQuery {
@@ -35,14 +39,14 @@ export const SQL_QUERY_MINT = (q: MintQuery) =>
   milliseconds,
   available,
   minted_at,
-  activated,
+  activated
 ) VALUES (
   ${JSON.stringify(q.type)},
   ${JSON.stringify(q.minter)},
   ${q.max_uses},
   ${q.milliseconds},
   NOW(),
-  NULL,
+  NULL
 ) RETURNING *;`;
 
 export type UnmintQuery = Pick<MintedPerk, "id">;
@@ -65,12 +69,12 @@ export const SQL_QUERY_AWARD = (q: AwardQuery) =>
   awarder,
   awardee,
   mint_id,
-  awarded_at,
+  awarded_at
 ) VALUES (
   ${JSON.stringify(q.awarder)},
   ${JSON.stringify(q.awardee)},
   ${JSON.stringify(q.mint_id)},
-  NOW(),
+  NOW()
 ) RETURNING *;`;
 
 export type RevokeQuery = Pick<Award, "id">;

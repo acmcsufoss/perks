@@ -144,9 +144,8 @@ export class PgStorer implements Storer {
   public async createTables(): Promise<void> {
     const client = await this.pool.connect();
     try {
-      await Promise.all([SQL_TABLE_PERKS, SQL_TABLE_AWARDS].map((sql) => {
-        return client.queryObject(sql);
-      }));
+      await client.queryObject(SQL_TABLE_PERKS);
+      await client.queryObject(SQL_TABLE_AWARDS);
     } finally {
       client.release();
     }
