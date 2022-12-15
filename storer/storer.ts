@@ -1,6 +1,6 @@
 import type { Award, MintedPerk } from "../perks/mod.ts";
 
-export const SQL_TABLE_PERKS = `CREATE TABLE IF NOT EXISTS perks (
+export const SQL_CREATE_TABLES = `CREATE TABLE IF NOT EXISTS perks (
   type VARCHAR(255) NOT NULL,
   minter VARCHAR(255) NOT NULL,
   minted_at TIMESTAMP NOT NULL DEFAULT NOW(),
@@ -10,9 +10,9 @@ export const SQL_TABLE_PERKS = `CREATE TABLE IF NOT EXISTS perks (
   activated TIMESTAMP,
 
   id SERIAL PRIMARY KEY
-);`;
+);
 
-export const SQL_TABLE_AWARDS = `CREATE TABLE IF NOT EXISTS awards (
+CREATE TABLE IF NOT EXISTS awards (
   awarder VARCHAR(255) NOT NULL,
   awardee VARCHAR(255) NOT NULL,
   awarded_at TIMESTAMP NOT NULL DEFAULT NOW(),
@@ -21,6 +21,30 @@ export const SQL_TABLE_AWARDS = `CREATE TABLE IF NOT EXISTS awards (
   FOREIGN KEY (mint_id) REFERENCES perks(id) ON DELETE CASCADE,
   id SERIAL PRIMARY KEY
 );`;
+
+export const SQL_DROP_TABLES = `DROP TABLE IF EXISTS awards, perks;`;
+
+export interface Diagnosis {
+  perks: bigint;
+  awards: bigint;
+}
+
+export const SQL_QUERY_DIAGNOSIS = `SELECT
+  perks.id AS perk_id,
+  perks.type AS perk_type,
+  perks.minter AS perk_minter,
+  perks.max_uses AS perk_max_uses,
+  perks.milliseconds AS perk_milliseconds,
+  perks.available AS perk_available,
+  perks.activated AS perk_activated,
+  awards.id AS award_id,
+  awards.awarder AS award_awarder,
+  awards.awardee AS award_awardee,
+  awards.mint_id AS award_mint_id
+FROM awards
+INNER JOIN perks ON perks.id = awards.mint_id
+ORDER BY perks.id DESC, awards.id DESC
+LIMIT 5;`;
 
 export interface MintQuery {
   type: string;
@@ -157,4 +181,6 @@ export interface Storer {
   doUseQuery: (q: UseQuery) => Promise<StoredPerk>;
 
   createTables: () => Promise<void>;
+  dropTables: () => Promise<void>;
+  diagnoseTables: () => Promise<Diagnosis>;
 }

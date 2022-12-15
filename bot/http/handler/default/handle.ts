@@ -1,5 +1,5 @@
 import type {
-  APIApplicationCommandInteractionDataSubcommandOption,
+  APIApplicationCommandInteractionDataBasicOption,
   APIChatInputApplicationCommandInteraction,
   APIInteractionResponse,
 } from "../../../deps.ts";
@@ -43,85 +43,83 @@ export async function handle(
   }
 
   if (!interaction.member) {
-    console.log({ interaction });
     throw new Error("No user provided");
   }
 
-  const { 0: { options } } = (interaction.data
-    .options as APIApplicationCommandInteractionDataSubcommandOption[]);
+  const options = parseOptions(
+    interaction.data
+      .options as APIApplicationCommandInteractionDataBasicOption[],
+  );
 
   switch (name) {
     case MINT: {
       const result = await engine.mint({
         type: name,
         minter: interaction.member.user.id,
-        max_uses: Number(
-          options?.find((o) => o.name === MINT_MAX_USES)?.value,
-        ),
-        milliseconds: Number(
-          options?.find((o) => o.name === MINT_MILLISECONDS)?.value,
-        ),
+        max_uses: options[ApplicationCommandOptionType.Integer][MINT_MAX_USES],
+        milliseconds:
+          options[ApplicationCommandOptionType.Integer][MINT_MILLISECONDS],
       });
 
       return makeMintInteractionResponse(result);
     }
 
     case UNMINT: {
-      const id = options?.find((o) => o.name === UNMINT_MINT_ID)?.value;
+      const id = options[ApplicationCommandOptionType.String][UNMINT_MINT_ID];
       if (!id) {
-        throw new Error("No ID provided");
+        return makeErrorInteractionResponse("No ID provided");
       }
 
-      const result = await engine.unmint({ id: String(id) });
+      const result = await engine.unmint({ id: id });
       return makeUnmintInteractionResponse(result);
     }
 
     case AWARD: {
-      const id = options?.find((o) => o.name === AWARD_MINT_ID)?.value;
+      const id = options[ApplicationCommandOptionType.String][AWARD_MINT_ID];
       if (!id) {
-        throw new Error("No ID provided");
+        return makeErrorInteractionResponse("No ID provided");
       }
 
-      const awardee = options?.find((o) => o.name === AWARD_MEMBER)?.value;
+      const awardee = options[ApplicationCommandOptionType.User][AWARD_MEMBER];
       if (!awardee) {
-        throw new Error("No member provided");
+        return makeErrorInteractionResponse("No member provided");
       }
 
       const result = await engine.award({
-        mint_id: String(id),
-        awarder: interaction.user?.id ?? "0",
-        awardee: String(awardee),
+        mint_id: id,
+        awarder: interaction.member.user.id,
+        awardee: awardee,
       });
       return makeAwardInteractionResponse(result);
     }
 
     case REVOKE: {
-      const id = options?.find((o) => o.name === REVOKE_AWARD_ID)?.value;
+      const id = options[ApplicationCommandOptionType.String][REVOKE_AWARD_ID];
       if (!id) {
-        throw new Error("No ID provided");
+        return makeErrorInteractionResponse("No ID provided");
       }
 
-      const result = await engine.revoke({ award_id: String(id) });
+      const result = await engine.revoke({ award_id: id });
       return makeRevokeInteractionResponse(result);
     }
 
     case LIST: {
-      const id = options?.find((o) => o.name === LIST_AWARD_MEMBER)?.value;
-      const request = id ? { awardee: String(id) } : {};
+      const id = options[ApplicationCommandOptionType.User][LIST_AWARD_MEMBER];
+      const request = id ? { awardee: id } : {};
       const result = await engine.list(request);
       return makeListInteractionResponse(result);
     }
 
     case USE: {
-      const id = options?.find((o) => o.name === USE_MINT_ID)?.value;
+      const id = options[ApplicationCommandOptionType.String][USE_MINT_ID];
       if (!id) {
-        throw new Error("No name provided");
+        return makeErrorInteractionResponse("No ID provided");
       }
 
-      const request: UseRequest = { mint_id: String(id) };
-      const query = options?.find((o) => o.name === USE_QUERY)?.value;
+      const request: UseRequest = { mint_id: id };
+      const query = options[ApplicationCommandOptionType.String][USE_QUERY];
       if (query) {
-        request.query = String(query);
+        request.query = query;
       }
 
       const result = await engine.use(request);
@@ -132,4 +130,32 @@ export async function handle(
       return makeErrorInteractionResponse("Invalid command. Please try again.");
     }
   }
+}
+
+// TODO: Infer more specific return types based on registered application command options.
+function parseOptions(
+  options: APIApplicationCommandInteractionDataBasicOption[],
+) {
+  const result = {
+    [ApplicationCommandOptionType.String]: {} as Record<string, string>,
+    [ApplicationCommandOptionType.Integer]: {} as Record<string, number>,
+    [ApplicationCommandOptionType.Boolean]: {} as Record<string, boolean>,
+    [ApplicationCommandOptionType.User]: {} as Record<string, string>,
+    [ApplicationCommandOptionType.Channel]: {} as Record<string, string>,
+    [ApplicationCommandOptionType.Role]: {} as Record<string, string>,
+    [ApplicationCommandOptionType.Mentionable]: {} as Record<string, string>,
+    [ApplicationCommandOptionType.Number]: {} as Record<string, number>,
+    [ApplicationCommandOptionType.Attachment]: {} as Record<string, string>,
+    [ApplicationCommandOptionType.Subcommand]: {} as Record<string, unknown>,
+    [ApplicationCommandOptionType.SubcommandGroup]: {} as Record<
+      string,
+      unknown
+    >,
+  } as const;
+
+  for (const o of options) {
+    result[o.type][o.name] = o.value;
+  }
+
+  return result;
 }

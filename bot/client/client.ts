@@ -26,29 +26,15 @@ interface RegisterInit {
 export async function overwrite(
   { botID, botToken, app }: RegisterInit,
 ): Promise<Response> {
-  const url = makeRegisterGuildCommandsURL(botID);
-  const r = await fetch(url.toString(), {
-    method: "POST",
-    headers: {
-      "Content-Type": contentType("json"),
-      "Authorization": makeBotAuthorization(botToken),
-    },
-    body: JSON.stringify(app),
-  });
-  if (!r.ok) {
-    console.error(JSON.stringify(await r.json(), null, 2));
-    throw new Error(
-      `Failed to overwrite Discord Slash Commands: ${r.status} ${r.statusText}`,
-    );
-  }
-
-  return r;
+  const url = makeRegisterCommandsURL(botID);
+  const headers = new Headers();
+  headers.set("Content-Type", contentType("json"));
+  headers.set("Authorization", makeBotAuthorization(botToken));
+  const body = JSON.stringify(app);
+  return await fetch(url, { method: "POST", headers, body });
 }
 
-function makeRegisterGuildCommandsURL(
-  clientID: string,
-  base = DISCORD_API_URL,
-) {
+function makeRegisterCommandsURL(clientID: string, base = DISCORD_API_URL) {
   return new URL(`${base}/applications/${clientID}/commands`);
 }
 

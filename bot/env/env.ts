@@ -10,7 +10,8 @@ export const ENV = {
   databasePass: Deno.env.get("DATABASE_PASS") || "",
 
   // Optional environment variables.
-  registerPath: Deno.env.get("REGISTER_PATH") || "/__register",
+  // registerPath: Deno.env.get("REGISTER_PATH") || "/__register",
+  diagnosePath: Deno.env.get("DIAGNOSE_PATH") || "/__diagnose",
 } as const;
 
 export type Env = typeof ENV;

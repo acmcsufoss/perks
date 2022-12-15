@@ -1,8 +1,13 @@
 export type {
+  APIApplicationCommandBasicOption,
+  APIApplicationCommandInteractionDataBasicOption,
   APIApplicationCommandInteractionDataOption,
   APIApplicationCommandInteractionDataSubcommandOption,
   APIApplicationCommandOption,
+  APIApplicationCommandOptionBase,
   APIApplicationCommandOptionChoice,
+  APIApplicationCommandSubcommandGroupOption,
+  APIApplicationCommandSubcommandOption,
   APIChatInputApplicationCommandInteraction,
   APIInteraction,
   APIInteractionResponse,
