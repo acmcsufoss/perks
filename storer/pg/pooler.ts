@@ -10,9 +10,13 @@ export interface Pooler {
 }
 
 interface Client {
-  queryObject<T>(
-    query: string,
-    args?: QueryArguments,
+  // queryObject<T>(
+  //   query: string,
+  //   args?: QueryArguments,
+  // ): Promise<QueryObjectResult<T>>;
+  queryArray<T>(
+    query: TemplateStringsArray,
+    ...args: unknown[]
   ): Promise<QueryObjectResult<T>>;
   release(): void;
 }

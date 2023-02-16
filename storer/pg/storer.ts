@@ -34,9 +34,22 @@ export class PgStorer implements Storer {
   public async doMintQuery(q: MintQuery): Promise<StoredPerk> {
     const client = await this.pool.connect();
     try {
-      const result = await client.queryObject<StoredPerk>(
-        SQL_QUERY_MINT(q),
-      );
+      const result = await client.queryArray<StoredPerk>`INSERT INTO perks (
+  type,
+  minter,
+  max_uses,
+  milliseconds,
+  available,
+  minted_at,
+  activated
+) VALUES (
+  ${JSON.stringify(q.type)},
+  ${JSON.stringify(q.minter)},
+  ${q.max_uses},
+  ${q.milliseconds},
+  NOW(),
+  NULL
+) RETURNING *;`;
       const row = result.rows[0];
       console.log("TODO: DELETE ME", { row });
       return row;
@@ -48,7 +61,9 @@ export class PgStorer implements Storer {
   public async doUnmintQuery(q: UnmintQuery): Promise<StoredPerk> {
     const client = await this.pool.connect();
     try {
-      const result = await client.queryObject<StoredPerk>(SQL_QUERY_UNMINT(q));
+      const result = await client.queryArray<StoredPerk>`DELETE FROM perks
+      WHERE id = ${q.id}
+        RETURNING *;`;
       const row = result.rows[0];
       console.log("TODO: DELETE ME", { row });
       return row;
@@ -60,9 +75,17 @@ export class PgStorer implements Storer {
   public async doAwardQuery(q: AwardQuery): Promise<StoredAward> {
     const client = await this.pool.connect();
     try {
-      const result = await client.queryObject<StoredAward>(
-        SQL_QUERY_AWARD(q),
-      );
+      const result = await client.queryArray<StoredAward>`INSERT INTO awards (
+        awarder,
+        awardee,
+        mint_id,
+        awarded_at
+      ) VALUES (
+        ${JSON.stringify(q.awarder)},
+        ${JSON.stringify(q.awardee)},
+        ${JSON.stringify(q.mint_id)},
+        NOW()
+      ) RETURNING *;`;
       const row = result.rows[0];
       console.log("TODO: DELETE ME", { row });
       return row;
