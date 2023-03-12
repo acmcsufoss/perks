@@ -28,30 +28,33 @@ const store = new PgStorer(pool);
 // await store.createTables();
 
 // TEST QUERIES 
-await store.doMintQuery({
-  type: "mint",
-  minter: "test",
-  max_uses: 1,
-  milliseconds: 100
-})
+// await store.doMintQuery({
+//   type: "mint",
+//   minter: "test",
+//   max_uses: 1,
+//   milliseconds: 100
+// })
 
-await store.doMintQuery({
-  type: "mint2",
-  minter: "test2",
-  max_uses: 1,
-  milliseconds: 100
-})
+// await store.doMintQuery({
+//   type: "mint2",
+//   minter: "test2",
+//   max_uses: 1,
+//   milliseconds: 100
+// })
 
-await store.doAwardQuery({
-  awarder: "test",
-  awardee: "test",
-  mint_id: 1,
-})
+// await store.doAwardQuery({
+//   awarder: "test",
+//   awardee: "test",
+//   mint_id: 1,
+// })
 
-await store.doUnmintQuery({
-  id: 1
-})
+// await store.doRevokeQuery({
+//   id: 1
+// })
 
+// await store.doPreuseQuery({
+//   mint_id: 1
+// })
 
 
 
