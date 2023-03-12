@@ -43,14 +43,18 @@ const store = new PgStorer(pool);
 // })
 
 // await store.doAwardQuery({
-//   awarder: "test",
-//   awardee: "test",
+//   awarder: 'test',
+//   awardee: 'test',
 //   mint_id: 1,
 // })
 
 // await store.doRevokeQuery({
 //   id: 1
 // })
+
+await store.doListQuery({
+  awardee: 'test'
+})
 
 // await store.doPreuseQuery({
 //   mint_id: 1
