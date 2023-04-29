@@ -1,7 +1,6 @@
 import type { Storer } from "../../storer/mod.ts";
 import { MintedPerk } from "../mod.ts";
 import { Registry } from "../provider/registry/mod.ts";
-
 import type {
   AwardRequest,
   AwardResponse,
@@ -16,7 +15,7 @@ import type {
   UnmintResponse,
   UseRequest,
   UseResponse,
-} from "./types.ts";
+} from "./engine_interface.ts";
 
 export class Engine implements EngineInterface {
   constructor(
@@ -27,14 +26,14 @@ export class Engine implements EngineInterface {
   public async mint(r: MintRequest): Promise<MintResponse> {
     const minted = await this.storer.doMintQuery({
       type: r.type,
-      minter: r.minter,
+      minter_id: r.minter_id,
       max_uses: r.max_uses ?? 10,
       milliseconds: r.milliseconds ?? 3.6e6,
     });
     return {
       id: minted.id,
       type: minted.type,
-      minter: minted.minter,
+      minter_id: minted.minter_id,
       minted_at: minted.minted_at,
       max_uses: minted.max_uses,
       milliseconds: minted.milliseconds,
@@ -47,7 +46,7 @@ export class Engine implements EngineInterface {
     return {
       id: unminted.id,
       type: unminted.type,
-      minter: unminted.minter,
+      minter_id: unminted.minter_id,
       minted_at: unminted.minted_at,
       max_uses: unminted.max_uses,
       milliseconds: unminted.milliseconds,
@@ -58,27 +57,27 @@ export class Engine implements EngineInterface {
 
   public async award(r: AwardRequest): Promise<AwardResponse> {
     const awarded = await this.storer.doAwardQuery({
-      awarder: r.awarder,
-      awardee: r.awardee,
+      awarder_id: r.awarder_id,
+      awardee_id: r.awardee_id,
       mint_id: r.mint_id,
     });
     return {
       id: awarded.id,
-      awarder: awarded.awarder,
-      awardee: awarded.awardee,
+      awarder_id: awarded.awarder_id,
+      awardee_id: awarded.awardee_id,
       mint_id: awarded.mint_id,
       awarded_at: awarded.awarded_at,
     };
   }
 
   public async list(r: ListRequest): Promise<ListResponse> {
-    const awards = await this.storer.doListQuery({ awardee: r.awardee });
+    const awards = await this.storer.doListQuery({ awardee_id: r.awardee_id });
     return {
       awards: awards.map((a) => ({
         perk: {
           id: a.perk.id,
           type: a.perk.type,
-          minter: a.perk.minter,
+          minter_id: a.perk.minter_id,
           minted_at: a.perk.minted_at,
           max_uses: a.perk.max_uses,
           milliseconds: a.perk.milliseconds,
@@ -87,8 +86,8 @@ export class Engine implements EngineInterface {
         },
         award: {
           id: a.award.id,
-          awarder: a.award.awarder,
-          awardee: a.award.awardee,
+          awarder_id: a.award.awarder_id,
+          awardee_id: a.award.awardee_id,
           mint_id: a.award.mint_id,
           awarded_at: a.award.awarded_at,
         },
@@ -100,8 +99,8 @@ export class Engine implements EngineInterface {
     const revoked = await this.storer.doRevokeQuery({ id: r.award_id });
     return {
       id: revoked.id,
-      awarder: revoked.awarder,
-      awardee: revoked.awardee,
+      awarder_id: revoked.awarder_id,
+      awardee_id: revoked.awardee_id,
       mint_id: revoked.mint_id,
       awarded_at: revoked.awarded_at,
     };
@@ -109,8 +108,9 @@ export class Engine implements EngineInterface {
 
   public async use(r: UseRequest): Promise<UseResponse> {
     const preused = await this.storer.doPreuseQuery({ mint_id: r.mint_id });
-    if (checkConsumed(preused.perk)) {
-      throw new Error("Perk has already been consumed");
+    const isAvailable = parseIsAvailable(preused.perk);
+    if (isAvailable) {
+      throw new Error("Perk is no longer available");
     }
 
     const provider = this.registry.get(preused.perk.type);
@@ -128,10 +128,8 @@ export class Engine implements EngineInterface {
   }
 }
 
-function checkConsumed(perk: MintedPerk) {
-  return perk.available <= 0 ||
-    (perk.milliseconds > 0 && perk.activated && (
-      Date.now() - new Date(perk.activated).getTime() >
-        perk.milliseconds
-    ));
+function parseIsAvailable(perk: MintedPerk): boolean {
+  return perk.available > 0 &&
+    !(perk.milliseconds > 0 && perk.activated &&
+      Date.now() - new Date(perk.activated).getTime() > perk.milliseconds);
 }

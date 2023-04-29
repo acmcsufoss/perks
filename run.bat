@@ -1,1 +1,0 @@
-deno run -A bot/http/main.ts

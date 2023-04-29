@@ -6,7 +6,6 @@ export const ENV = {
   guildID: Deno.env.get("GUILD_ID") || "",
   botID: Deno.env.get("BOT_ID") || "",
   botToken: Deno.env.get("BOT_TOKEN") || "",
-  databaseURL: Deno.env.get("DATABASE_URL") || "",
 
   // Optional environment variables.
   // registerPath: Deno.env.get("REGISTER_PATH") || "/__register", // Register is how you add a bot to a server.

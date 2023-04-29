@@ -8,8 +8,14 @@ import type {
   ProviderRequest,
 } from "../../../../perks/provider/mod.ts";
 
+/**
+ * DALLE2 is the name of the provider.
+ */
 export const DALLE2 = "dalle2";
 
+/**
+ * DALLE2 is a provider that uses OpenAI's DALL-E model to generate images.
+ */
 export class Dalle2 implements Provider {
   public readonly name = DALLE2;
 
