@@ -18,7 +18,6 @@ GUILD_ID=""
 BOT_TOKEN=""
 BOT_ID=""
 DATABASE_URL=""
-DATABASE_PASS=""
 ```
 
 2. Run the bot server:

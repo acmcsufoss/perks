@@ -76,17 +76,7 @@ export class PgStorer implements Storer {
   public async doAwardQuery(q: AwardQuery): Promise<StoredAward> {
     const client = await this.pool.connect();
     try {
-      const result = await client.queryArray<StoredAward>`INSERT INTO awards (
-        awarder,
-        awardee,
-        mint_id,
-        awarded_at
-      ) VALUES (
-        ${JSON.stringify(q.awarder)},
-        ${JSON.stringify(q.awardee)},
-        ${JSON.stringify(q.mint_id)},
-        NOW()
-      ) RETURNING *;`;
+      const result = await client.queryArray<StoredAward>();
       const row = result.rows[0];
       console.log("TODO: DELETE ME", { row });
       return row;
@@ -94,7 +84,7 @@ export class PgStorer implements Storer {
       client.release();
     }
   }
- 
+
   public async doRevokeQuery(q: RevokeQuery): Promise<StoredAward> {
     const client = await this.pool.connect();
     try {

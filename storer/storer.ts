@@ -1,5 +1,7 @@
 import type { Award, MintedPerk } from "../perks/mod.ts";
 
+export type ID = string;
+
 export const SQL_CREATE_TABLES = `CREATE TABLE IF NOT EXISTS perks (
   type VARCHAR(255) NOT NULL,
   minter VARCHAR(255) NOT NULL,
@@ -83,7 +85,7 @@ WHERE id = ${q.id}
 export interface AwardQuery {
   awarder: string;
   awardee: string;
-  mint_id: number;
+  mint_id: ID;
 }
 
 export type StoredAward = Award;
@@ -135,9 +137,8 @@ INNER JOIN perks ON perks.id = awards.mint_id
 WHERE
 awards.awardee = '${JSON.stringify(q.awardee)}';`;
 
-// ${q.awardee ? `awardee = '${JSON.stringify(q.awardee)}'` : "TRUE"}
 export interface PreuseQuery {
-  mint_id: string;
+  mint_id: ID;
 }
 
 export const SQL_QUERY_PREUSE = (q: PreuseQuery) =>

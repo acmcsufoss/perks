@@ -13,16 +13,3 @@ export interface Provider {
 
   use(r: ProviderRequest): Promise<APIInteractionResponse>;
 }
-
-// /**
-//  * Provider for a Perk.
-//  */
-// export abstract class Provider {
-//   name: string;
-
-//   constructor(name: string) {
-//     this.name = name;
-//   }
-
-//   abstract use(r: ProviderRequest): Promise<APIInteractionResponse>;
-// }

@@ -7,11 +7,13 @@ export const ENV = {
   botID: Deno.env.get("BOT_ID") || "",
   botToken: Deno.env.get("BOT_TOKEN") || "",
   databaseURL: Deno.env.get("DATABASE_URL") || "",
-  databasePass: Deno.env.get("DATABASE_PASS") || "",
 
   // Optional environment variables.
-  // registerPath: Deno.env.get("REGISTER_PATH") || "/__register",
-  diagnosePath: Deno.env.get("DIAGNOSE_PATH") || "/__diagnose",
+  // registerPath: Deno.env.get("REGISTER_PATH") || "/__register", // Register is how you add a bot to a server.
+  diagnosePath: Deno.env.get("DIAGNOSE_PATH") || "/__diagnose", // Diagnose is how you check the database.
+
+  // Provider environment variables.
+  openaiAPIKey: Deno.env.get("OPENAI_API_KEY") || "",
 } as const;
 
 export type Env = typeof ENV;
