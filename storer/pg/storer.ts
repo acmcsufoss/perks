@@ -48,6 +48,7 @@ export class PgStorer implements Storer {
   ${q.max_uses},
   ${q.milliseconds},
   NOW(),
+  NOW(),
   NULL
 ) RETURNING *;`;
       const row = result.rows[0];
@@ -93,7 +94,7 @@ export class PgStorer implements Storer {
       client.release();
     }
   }
-
+ 
   public async doRevokeQuery(q: RevokeQuery): Promise<StoredAward> {
     const client = await this.pool.connect();
     try {

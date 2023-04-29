@@ -24,7 +24,43 @@ const store = new PgStorer(pool);
 
 // Create tables if they don't exist.
 // await store.dropTables();
-await store.createTables();
+
+// await store.createTables();
+
+// TEST QUERIES 
+// await store.doMintQuery({
+//   type: "mint",
+//   minter: "test",
+//   max_uses: 1,
+//   milliseconds: 100
+// })
+
+// await store.doMintQuery({
+//   type: "mint2",
+//   minter: "test2",
+//   max_uses: 1,
+//   milliseconds: 100
+// })
+
+// await store.doAwardQuery({
+//   awarder: 'test',
+//   awardee: 'test',
+//   mint_id: 1,
+// })
+
+// await store.doRevokeQuery({
+//   id: 1
+// })
+
+await store.doListQuery({
+  awardee: 'test'
+})
+
+// await store.doPreuseQuery({
+//   mint_id: 1
+// })
+
+
 
 // Create a Perks provider registry.
 const registry = new Registry(providers);

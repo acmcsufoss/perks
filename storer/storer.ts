@@ -6,7 +6,7 @@ export const SQL_CREATE_TABLES = `CREATE TABLE IF NOT EXISTS perks (
   minted_at TIMESTAMP NOT NULL DEFAULT NOW(),
   max_uses INTEGER NOT NULL,
   milliseconds INTEGER NOT NULL,
-  available INTEGER NOT NULL,
+  available TIMESTAMP NOT NULL,
   activated TIMESTAMP,
 
   id SERIAL PRIMARY KEY
@@ -70,7 +70,7 @@ export const SQL_QUERY_MINT = (q: MintQuery) =>
   ${q.max_uses},
   ${q.milliseconds},
   NOW(),
-  NULL
+  NULL,
 ) RETURNING *;`;
 
 export type UnmintQuery = Pick<MintedPerk, "id">;
@@ -83,7 +83,7 @@ WHERE id = ${q.id}
 export interface AwardQuery {
   awarder: string;
   awardee: string;
-  mint_id: string;
+  mint_id: number;
 }
 
 export type StoredAward = Award;
@@ -133,9 +133,9 @@ export const SQL_QUERY_LIST = (q: ListQuery) =>
 FROM awards
 INNER JOIN perks ON perks.id = awards.mint_id
 WHERE
-  ${q.awardee ? `awardee = ${JSON.stringify(q.awardee)}` : "TRUE"}
-  awards.awardee = ${JSON.stringify(q.awardee)};`;
+awards.awardee = '${JSON.stringify(q.awardee)}';`;
 
+// ${q.awardee ? `awardee = '${JSON.stringify(q.awardee)}'` : "TRUE"}
 export interface PreuseQuery {
   mint_id: string;
 }
