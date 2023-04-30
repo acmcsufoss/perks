@@ -128,8 +128,8 @@ export class Engine implements EngineInterface {
   }
 }
 
-function parseIsAvailable(perk: MintedPerk): boolean {
+function parseIsAvailable(perk: MintedPerk, date = new Date()): boolean {
   return perk.available > 0 &&
     !(perk.milliseconds > 0 && perk.activated &&
-      Date.now() - new Date(perk.activated).getTime() > perk.milliseconds);
+      date.getTime() - new Date(perk.activated).getTime() > perk.milliseconds);
 }
