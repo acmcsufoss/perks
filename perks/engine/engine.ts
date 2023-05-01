@@ -1,135 +1,137 @@
-import type { Storer } from "../../storer/mod.ts";
-import { MintedPerk } from "../mod.ts";
-import { Registry } from "../provider/registry/mod.ts";
-import type {
-  AwardRequest,
-  AwardResponse,
-  EngineInterface,
-  ListRequest,
-  ListResponse,
-  MintRequest,
-  MintResponse,
-  RevokeRequest,
-  RevokeResponse,
-  UnmintRequest,
-  UnmintResponse,
-  UseRequest,
-  UseResponse,
-} from "./engine_interface.ts";
+import type { APIInteractionResponse } from "../../bot/deps.ts";
+import type { Award, ID, MintedPerk } from "../mod.ts";
 
-export class Engine implements EngineInterface {
-  constructor(
-    public readonly storer: Storer,
-    public readonly registry: Registry,
-  ) {}
+/**
+ * Engine is the interface for the perks engine.
+ *
+ * The perks engine is the core of the perks system. It is responsible for
+ * minting perks, awarding perks, and revoking perks.
+ */
+export interface Engine {
+  /**
+   * mint mints a new perk.
+   */
+  mint: (r: MintRequest) => Promise<MintResponse>;
 
-  public async mint(r: MintRequest): Promise<MintResponse> {
-    const minted = await this.storer.doMintQuery({
-      type: r.type,
-      minter_id: r.minter_id,
-      max_uses: r.max_uses ?? 10,
-      milliseconds: r.milliseconds ?? 3.6e6,
-    });
-    return {
-      id: minted.id,
-      type: minted.type,
-      minter_id: minted.minter_id,
-      minted_at: minted.minted_at,
-      max_uses: minted.max_uses,
-      milliseconds: minted.milliseconds,
-      available: minted.available,
-    };
-  }
+  /**
+   * unmint unmints a perk.
+   */
+  unmint: (r: UnmintRequest) => Promise<UnmintResponse>;
 
-  public async unmint(r: UnmintRequest): Promise<UnmintResponse> {
-    const unminted = await this.storer.doUnmintQuery({ id: r.id });
-    return {
-      id: unminted.id,
-      type: unminted.type,
-      minter_id: unminted.minter_id,
-      minted_at: unminted.minted_at,
-      max_uses: unminted.max_uses,
-      milliseconds: unminted.milliseconds,
-      available: unminted.available,
-      activated: unminted.activated,
-    };
-  }
+  /**
+   * award awards a perk.
+   */
+  award: (r: AwardRequest) => Promise<AwardResponse>;
 
-  public async award(r: AwardRequest): Promise<AwardResponse> {
-    const awarded = await this.storer.doAwardQuery({
-      awarder_id: r.awarder_id,
-      awardee_id: r.awardee_id,
-      mint_id: r.mint_id,
-    });
-    return {
-      id: awarded.id,
-      awarder_id: awarded.awarder_id,
-      awardee_id: awarded.awardee_id,
-      mint_id: awarded.mint_id,
-      awarded_at: awarded.awarded_at,
-    };
-  }
+  /**
+   * list lists all perks by awardee ID or all perks if no awardee ID is
+   * provided.
+   */
+  list: (r: ListRequest) => Promise<ListResponse>;
 
-  public async list(r: ListRequest): Promise<ListResponse> {
-    const awards = await this.storer.doListQuery({ awardee_id: r.awardee_id });
-    return {
-      awards: awards.map((a) => ({
-        perk: {
-          id: a.perk.id,
-          type: a.perk.type,
-          minter_id: a.perk.minter_id,
-          minted_at: a.perk.minted_at,
-          max_uses: a.perk.max_uses,
-          milliseconds: a.perk.milliseconds,
-          available: a.perk.available,
-          activated: a.perk.activated,
-        },
-        award: {
-          id: a.award.id,
-          awarder_id: a.award.awarder_id,
-          awardee_id: a.award.awardee_id,
-          mint_id: a.award.mint_id,
-          awarded_at: a.award.awarded_at,
-        },
-      })),
-    };
-  }
+  /**
+   * revoke revokes an award.
+   */
+  revoke: (r: RevokeRequest) => Promise<RevokeResponse>;
 
-  public async revoke(r: RevokeRequest): Promise<RevokeResponse> {
-    const revoked = await this.storer.doRevokeQuery({ id: r.award_id });
-    return {
-      id: revoked.id,
-      awarder_id: revoked.awarder_id,
-      awardee_id: revoked.awardee_id,
-      mint_id: revoked.mint_id,
-      awarded_at: revoked.awarded_at,
-    };
-  }
-
-  public async use(r: UseRequest): Promise<UseResponse> {
-    const preused = await this.storer.doPreuseQuery({ mint_id: r.mint_id });
-    const isAvailable = parseIsAvailable(preused.perk);
-    if (isAvailable) {
-      throw new Error("Perk is no longer available");
-    }
-
-    const provider = this.registry.get(preused.perk.type);
-    if (!provider) {
-      throw new Error("Perk provider not found");
-    }
-
-    const response = await provider.use({ ...preused });
-    if (!response) {
-      throw new Error("Perk not used");
-    }
-
-    await this.storer.doUseQuery({ mint_id: r.mint_id });
-    return { data: response };
-  }
+  /**
+   * use uses a perk.
+   */
+  use: (r: UseRequest) => Promise<UseResponse>;
 }
 
-function parseIsAvailable(perk: MintedPerk, date = new Date()): boolean {
-  return perk.available > 0 &&
-    !(perk.milliseconds > 0 && perk.activated &&
-      date.getTime() - new Date(perk.activated).getTime() > perk.milliseconds);
+export interface MintRequest {
+  /**
+   * type is the name of the perk to be minted.
+   */
+  type: string;
+
+  /**
+   * minter is the ID of the user minting the perk.
+   */
+  minter_id: ID;
+
+  /**
+   * max_uses is the maximum number of times this perk can be consumed.
+   */
+  max_uses?: number;
+
+  /**
+   * milliseconds is the number of milliseconds this perk is valid for.
+   */
+  milliseconds?: number;
+}
+
+/**
+ * MintResponse is the response from the mint method.
+ */
+export type MintResponse = MintedPerk;
+
+/**
+ * UnmintRequest is the request to the unmint method.
+ */
+export type UnmintRequest = Pick<MintedPerk, "id">;
+
+/**
+ * UnmintResponse is the response from the unmint method.
+ */
+export type UnmintResponse = MintedPerk;
+
+/**
+ * AwardRequest is the request to the award method.
+ */
+export type AwardRequest = Omit<Award, "id" | "awarded_at">;
+
+/**
+ * AwardResponse is the response from the award method.
+ */
+export type AwardResponse = Award;
+
+/**
+ * AwardSummary is a summary of an award.
+ */
+export interface AwardSummary {
+  perk: MintedPerk;
+  award: Award;
+}
+
+/**
+ * ListRequest is the request to the list method.
+ */
+export interface ListRequest {
+  awardee_id?: ID;
+}
+
+/**
+ * ListResponse is the response from the list method.
+ */
+export interface ListResponse {
+  awards: AwardSummary[];
+}
+
+/**
+ * RevokeRequest is the request to the revoke method.
+ */
+export interface RevokeRequest {
+  award_id: ID;
+}
+
+/**
+ * RevokeResponse is the response from the revoke method.
+ */
+export type RevokeResponse = Award;
+
+/**
+ * UseRequest is the request to the use method.
+ */
+export interface UseRequest {
+  mint_id: ID;
+  query?: string;
+}
+
+/**
+ * UseResponse is the response from the use method.
+ */
+export interface UseResponse {
+  data: APIInteractionResponse;
 }
