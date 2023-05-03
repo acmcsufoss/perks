@@ -12,6 +12,8 @@ import type {
   UnmintQuery,
 } from "../storer.ts";
 
+const kv = await Deno.openKv();
+
 /**
  * KVStorer uses Deno KV to implement the Storer interface.
  */
