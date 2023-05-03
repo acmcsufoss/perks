@@ -1,6 +1,6 @@
 # Perks
 
-Set of commands to mint, award, and use perks
+Set of commands to mint, award, and use perks.
 
 ## Development
 
@@ -17,7 +17,6 @@ PUBLIC_KEY=""
 GUILD_ID=""
 BOT_TOKEN=""
 BOT_ID=""
-DATABASE_URL=""
 ```
 
 2. Run the bot server:
@@ -66,7 +65,7 @@ https://discord.com/api/oauth2/authorize?client_id=1048046283367133246&permissio
 1. Install the UDD tool:
 
 ```bash
-deno install -rf --allow-read=. --allow-write=. --allow-net https://deno.land/x/udd/main.ts
+deno install -rf --reload --allow-read=. --allow-write=. --allow-net https://deno.land/x/udd/main.ts
 ```
 
 2. Update dependencies:
