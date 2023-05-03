@@ -1,5 +1,5 @@
 import type { Storer } from "../../../storer/mod.ts";
-import { MintedPerk } from "../../perk.ts";
+import { MintedPerk } from "../../mod.ts";
 import { Registry } from "../../provider/registry/mod.ts";
 import type {
   AwardRequest,

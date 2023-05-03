@@ -7,10 +7,10 @@ import { mustEnv } from "../env/mod.ts";
 import { APP_PERKS } from "../env/app/mod.ts";
 import { providers } from "../env/providers/mod.ts";
 import { Registry } from "../../perks/provider/registry/mod.ts";
-import { overwrite } from "../client/client.ts";
-import { DefaultHandler } from "./handler/default/handler.ts";
-import { DefaultEngine } from "../../perks/engine/default/engine.ts";
-import { KVStorer } from "../../storer/kv/kv_storer.ts";
+import { overwrite } from "../client/mod.ts";
+import { DefaultHandler } from "./handler/default/mod.ts";
+import { DefaultEngine } from "../../perks/engine/default/mod.ts";
+import { DenoKVStorer } from "../../storer/deno_kv/mod.ts";
 
 if (import.meta.main) {
   await main();
@@ -21,7 +21,7 @@ async function main() {
   const env = mustEnv();
 
   // Implement Storer class.
-  const store = new KVStorer(await Deno.openKv());
+  const store = new DenoKVStorer(await Deno.openKv());
 
   // Create a Perks provider registry.
   const registry = new Registry(providers);

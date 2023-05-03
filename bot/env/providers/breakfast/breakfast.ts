@@ -17,9 +17,9 @@ export class Breakfast implements Provider {
       type: InteractionResponseType.ChannelMessageWithSource,
       data: {
         content:
-          `This ${r.perk.type} perk was minted by ${r.perk.minter} at ${r.perk.minted_at}.
+          `This ${r.perk.type} perk was minted by ${r.perk.minter_id} at ${r.perk.minted_at}.
 
-This perk was awarded to ${r.award.awardee} by ${r.award.awarder} at ${r.award.awarded_at}.
+This perk was awarded to ${r.award.awardee_id} by ${r.award.awarder_id} at ${r.award.awarded_at}.
         
 You have ${r.perk.available - 1} uses remaining.
         

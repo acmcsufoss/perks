@@ -3,7 +3,7 @@ import type { APIApplicationCommandOptionChoice } from "../../deps.ts";
 import { mustEnv } from "../env.ts";
 
 import { Breakfast } from "./breakfast/mod.ts";
-import { Dalle2 } from "./dalle2/dalle2.ts";
+import { Dalle2 } from "./dalle2/mod.ts";
 
 const env = mustEnv();
 

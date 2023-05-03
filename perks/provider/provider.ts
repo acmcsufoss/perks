@@ -1,5 +1,5 @@
 import type { APIInteractionResponse } from "../../bot/deps.ts";
-import type { StoredSummary } from "../../storer/storer.ts";
+import type { StoredSummary } from "../../storer/mod.ts";
 
 export interface ProviderRequest extends StoredSummary {
   query?: string;

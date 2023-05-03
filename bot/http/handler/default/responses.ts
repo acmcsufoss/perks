@@ -37,7 +37,8 @@ export function makeAwardInteractionResponse(
   return {
     type: InteractionResponseType.ChannelMessageWithSource,
     data: {
-      content: `Awarded perk ${r.mint_id} to ${r.awardee} (award ID: ${r.id})`,
+      content:
+        `Awarded perk ${r.mint_id} to ${r.awardee_id} (award ID: ${r.id})`,
     },
   };
 }
@@ -48,7 +49,7 @@ export function makeRevokeInteractionResponse(
   return {
     type: InteractionResponseType.ChannelMessageWithSource,
     data: {
-      content: `Revoked perk ${r.mint_id} from ${r.awardee}`,
+      content: `Revoked perk ${r.mint_id} from ${r.awardee_id}`,
     },
   };
 }
@@ -60,7 +61,7 @@ export function makeListInteractionResponse(
     type: InteractionResponseType.ChannelMessageWithSource,
     data: {
       content: r.awards.map((r) =>
-        `${r.perk.type} perk ${r.award.id} (mint ID: ${r.perk.id}; uses remaining: ${r.perk.available}) awarded to ${r.award.awardee} by ${r.award.awarder} at ${r.award.awarded_at}`
+        `${r.perk.type} perk ${r.award.id} (mint ID: ${r.perk.id}; uses remaining: ${r.perk.available}) awarded to ${r.award.awardee_id} by ${r.award.awarder_id} at ${r.award.awarded_at}`
       ).join("\n"),
     },
   };

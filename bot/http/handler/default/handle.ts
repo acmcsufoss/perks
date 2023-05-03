@@ -55,7 +55,7 @@ export async function handle(
     case MINT: {
       const result = await engine.mint({
         type: name,
-        minter: interaction.member.user.id,
+        minter_id: interaction.member.user.id,
         max_uses: options[ApplicationCommandOptionType.Integer][MINT_MAX_USES],
         milliseconds:
           options[ApplicationCommandOptionType.Integer][MINT_MILLISECONDS],
@@ -80,15 +80,16 @@ export async function handle(
         return makeErrorInteractionResponse("No ID provided");
       }
 
-      const awardee = options[ApplicationCommandOptionType.User][AWARD_MEMBER];
-      if (!awardee) {
+      const awardee_id =
+        options[ApplicationCommandOptionType.User][AWARD_MEMBER];
+      if (!awardee_id) {
         return makeErrorInteractionResponse("No member provided");
       }
 
       const result = await engine.award({
         mint_id: id,
-        awarder: interaction.member.user.id,
-        awardee: awardee,
+        awarder_id: interaction.member.user.id,
+        awardee_id: awardee_id,
       });
       return makeAwardInteractionResponse(result);
     }
@@ -105,7 +106,7 @@ export async function handle(
 
     case LIST: {
       const id = options[ApplicationCommandOptionType.User][LIST_AWARD_MEMBER];
-      const request = id ? { awardee: id } : {};
+      const request = id ? { awardee_id: id } : {};
       const result = await engine.list(request);
       return makeListInteractionResponse(result);
     }

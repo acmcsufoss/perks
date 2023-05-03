@@ -1,4 +1,4 @@
-import type { Award, MintedPerk } from "../../perks/perk.ts";
+import type { Award, MintedPerk } from "../../perks/mod.ts";
 import type {
   AwardQuery,
   Diagnosis,
@@ -10,7 +10,7 @@ import type {
   StoredSummary,
   Storer,
   UnmintQuery,
-} from "../storer.ts";
+} from "../mod.ts";
 
 // TODO: Implement DenoKVStorer methods.
 // See:
