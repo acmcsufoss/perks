@@ -77,10 +77,10 @@ export interface StoredSummary {
 /**
  * PreuseQuery is the input to a preuse query.
  *
- * The preuse query returns the perk associated with the given mint_id.
+ * The preuse query returns the award and perk associated with the given award_id.
  */
 export interface PreuseQuery {
-  mint_id: ID;
+  award_id: ID;
 }
 
 /**
