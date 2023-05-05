@@ -123,28 +123,80 @@ export class DenoKVStorer implements Storer {
     return summaries;
   }
 
-  // TODO:
-  // Implement remaining queries.
-  //
-
   public async doPreuseQuery(q: PreuseQuery): Promise<StoredSummary> {
-    // const perk = await this.doPerkQuery({ perk_id: q.award_id });
-    // const { value: award } = await this.kv.get<Award>(
-    //   makeAwardsKey(this.namespace, perk.),
-    // );
-    // if (award === null) {
-    //   throw new Error(`Award not found: ${q.id}`);
-    // }
+    const { value: award } = await this.kv.get<Award>(
+      makeAwardsKey(this.namespace, q.award_id),
+    );
+    if (award === null) {
+      throw new Error(`Award not found: ${q.award_id}`);
+    }
 
-    throw new Error("Method not implemented.");
+    const perk = await this.doPerkQuery({ perk_id: award.mint_id });
+    return { award, perk };
   }
 
   public async doUseQuery(q: PreuseQuery): Promise<StoredSummary> {
-    throw new Error("Method not implemented.");
+    const { value: award } = await this.kv.get<Award>(
+      makeAwardsKey(this.namespace, q.award_id),
+    );
+    if (award === null) {
+      throw new Error(`Award not found: ${q.award_id}`);
+    }
+
+    const perk = await this.doPerkQuery({ perk_id: award.mint_id });
+    const { timestamp } = makeNewOptions();
+    if (perk.milliseconds + perk.minted_at > timestamp) {
+      throw new Error(`Perk has expired: ${q.award_id}`);
+    }
+    if (perk.available <= 0) {
+      throw new Error(`Perk no longer available: ${q.award_id}`);
+    }
+
+    const result = await this.kv
+      .atomic()
+      .set(
+        makePerksKey(this.namespace, perk.id),
+        {
+          ...perk,
+          available: perk.available - 1,
+        },
+      )
+      .commit();
+    if (!result.ok) {
+      throw new Error(`Failed to use perk: ${q.award_id}`);
+    }
+
+    return { award, perk };
   }
 
   public async doDiagnoseQuery(): Promise<Diagnosis> {
-    throw new Error("Method not implemented.");
+    const diagnosis: Diagnosis = {
+      perks: 0,
+      awards: 0,
+    };
+
+    await Promise.all([
+      (async () => {
+        for await (
+          const _ of this.kv.list<MintedPerk>({
+            prefix: makePerksKey(this.namespace),
+          })
+        ) {
+          diagnosis.perks++;
+        }
+      })(),
+      (async () => {
+        for await (
+          const _ of this.kv.list<Award>({
+            prefix: makeAwardsKey(this.namespace),
+          })
+        ) {
+          diagnosis.awards++;
+        }
+      })(),
+    ]);
+
+    return diagnosis;
   }
 }
 
