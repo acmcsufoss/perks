@@ -1,5 +1,5 @@
 // Run:
-// deno run -A bot/http/main.ts
+// deno run -A --unstable bot/http/main.ts
 // ngrok http 8000
 
 import { serve } from "./deps.ts";
