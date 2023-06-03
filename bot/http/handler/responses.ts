@@ -1,13 +1,12 @@
-import type { APIInteractionResponse } from "../../../deps.ts";
-import { InteractionResponseType } from "../../../deps.ts";
-
+import type { APIInteractionResponse } from "../../deps.ts";
+import { InteractionResponseType } from "../../deps.ts";
 import type {
   AwardResponse,
   ListResponse,
   MintResponse,
   RevokeResponse,
   UnmintResponse,
-} from "../../../../perks/engine/mod.ts";
+} from "../../../perks/engine/mod.ts";
 
 export function makeMintInteractionResponse(
   r: MintResponse,

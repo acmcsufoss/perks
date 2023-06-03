@@ -2,24 +2,20 @@ import type {
   APIApplicationCommandInteractionDataBasicOption,
   APIChatInputApplicationCommandInteraction,
   APIInteractionResponse,
-} from "../../../deps.ts";
-import { ApplicationCommandOptionType } from "../../../deps.ts";
+} from "../../deps.ts";
+import { ApplicationCommandOptionType } from "../../deps.ts";
 
-import type { Engine, UseRequest } from "../../../../perks/engine/mod.ts";
+import type { Engine, UseRequest } from "../../../perks/engine/mod.ts";
 import {
   MINT,
   MINT_MAX_USES,
   MINT_MILLISECONDS,
-} from "../../../env/app/sub/mint.ts";
-import { UNMINT, UNMINT_MINT_ID } from "../../../env/app/sub/unmint.ts";
-import {
-  AWARD,
-  AWARD_MEMBER,
-  AWARD_MINT_ID,
-} from "../../../env/app/sub/award.ts";
-import { REVOKE, REVOKE_AWARD_ID } from "../../../env/app/sub/revoke.ts";
-import { LIST, LIST_AWARD_MEMBER } from "../../../env/app/sub/list.ts";
-import { USE, USE_MINT_ID, USE_QUERY } from "../../../env/app/sub/use.ts";
+} from "../../env/app/sub/mint.ts";
+import { UNMINT, UNMINT_MINT_ID } from "../../env/app/sub/unmint.ts";
+import { AWARD, AWARD_MEMBER, AWARD_MINT_ID } from "../../env/app/sub/award.ts";
+import { REVOKE, REVOKE_AWARD_ID } from "../../env/app/sub/revoke.ts";
+import { LIST, LIST_AWARD_MEMBER } from "../../env/app/sub/list.ts";
+import { USE, USE_MINT_ID, USE_QUERY } from "../../env/app/sub/use.ts";
 import {
   makeAwardInteractionResponse,
   makeErrorInteractionResponse,

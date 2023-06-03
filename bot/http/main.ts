@@ -8,8 +8,8 @@ import { APP_PERKS } from "../env/app/mod.ts";
 import { providers } from "../env/providers/mod.ts";
 import { Registry } from "../../perks/provider/registry/mod.ts";
 import { overwrite } from "../client/mod.ts";
-import { DefaultHandler } from "./handler/default/mod.ts";
-import { DefaultEngine } from "../../perks/engine/default/mod.ts";
+import { Handler } from "./handler/mod.ts";
+import { Engine } from "../../perks/engine/mod.ts";
 import { DenoKVStorer } from "../../storer/deno_kv/mod.ts";
 
 if (import.meta.main) {
@@ -27,7 +27,7 @@ async function main() {
   const registry = new Registry(providers);
 
   // Create a Perks engine.
-  const engine = new DefaultEngine(store, registry);
+  const engine = new Engine(store, registry);
 
   // Overwrite the Discord Application Command.
   const { ok } = await overwrite({ ...env, app: APP_PERKS });
@@ -36,17 +36,13 @@ async function main() {
   }
 
   // Create a new handler.
-  const handler = new DefaultHandler(engine, env.publicKey);
+  const handler = new Handler(engine, env.publicKey);
 
   serve(async (r: Request) => {
     const u = new URL(r.url);
     switch (u.pathname) {
-      case env.diagnosePath: {
-        const diagnosis = await store.diagnoseTables();
-        return new Response(JSON.stringify(diagnosis, null, 2));
-      }
-
-      // TODO: Handle env.registerPath.
+      // TODO: Handle env.registerPath. This helper endpoint is used to
+      // register the bot with a Discord user's guild.
 
       default: {
         return await handler.handle(r);

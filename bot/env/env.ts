@@ -9,7 +9,7 @@ export const ENV = {
 
   // Optional environment variables.
   // registerPath: Deno.env.get("REGISTER_PATH") || "/__register", // Register is how you add a bot to a server.
-  diagnosePath: Deno.env.get("DIAGNOSE_PATH") || "/__diagnose", // Diagnose is how you check the database.
+  // diagnosePath: Deno.env.get("DIAGNOSE_PATH") || "/__diagnose", // Diagnose is how you check the database.
 
   // Provider environment variables.
   openaiAPIKey: Deno.env.get("OPENAI_API_KEY") || "",

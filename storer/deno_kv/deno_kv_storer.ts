@@ -28,7 +28,7 @@ export class DenoKVStorer implements Storer {
     const result = await this.kv.get<MintedPerk>(
       makePerksKey(this.namespace, q.perk_id),
     );
-    if (result.value === null) {
+    if (result?.value === null) {
       throw new Error(`Perk not found: ${q.perk_id}`);
     }
 
@@ -37,13 +37,10 @@ export class DenoKVStorer implements Storer {
 
   public async doMintQuery(q: MintQuery): Promise<MintedPerk> {
     const perk = makeMintedPerk(q, makeNewOptions());
-    const result = await this.kv
-      .atomic()
-      .set(
-        makePerksKey(this.namespace, perk.id),
-        perk,
-      )
-      .commit();
+    const result = await this.kv.set(
+      makePerksKey(this.namespace, perk.id),
+      perk,
+    );
     if (!result.ok) {
       throw new Error(`Failed to mint perk: ${q.type}`);
     }
@@ -52,27 +49,31 @@ export class DenoKVStorer implements Storer {
   }
 
   public async doUnmintQuery(q: UnmintQuery): Promise<MintedPerk> {
-    const perk = await this.doPerkQuery({ perk_id: q.id });
+    const perkResult = await this.kv.get<MintedPerk>(
+      makePerksKey(this.namespace, q.id),
+    );
+    if (perkResult?.value === null) {
+      throw new Error(`Perk not found: ${q.id}`);
+    }
+
     const result = await this.kv
       .atomic()
+      .check(perkResult)
       .delete(makePerksKey(this.namespace, q.id))
       .commit();
     if (!result.ok) {
       throw new Error(`Failed to unmint perk: ${q.id}`);
     }
 
-    return perk;
+    return perkResult.value;
   }
 
   public async doAwardQuery(q: AwardQuery): Promise<Award> {
     const award = makeAward(q, makeNewOptions());
-    const result = await this.kv
-      .atomic()
-      .set(
-        makeAwardsKey(this.namespace, award.id),
-        award,
-      )
-      .commit();
+    const result = await this.kv.set(
+      makeAwardsKey(this.namespace, award.id),
+      award,
+    );
     if (!result.ok) {
       throw new Error(`Failed to award perk: ${q.mint_id}`);
     }
@@ -81,22 +82,23 @@ export class DenoKVStorer implements Storer {
   }
 
   public async doRevokeQuery(q: RevokeQuery): Promise<Award> {
-    const { value: award } = await this.kv.get<Award>(
+    const awardResult = await this.kv.get<Award>(
       makeAwardsKey(this.namespace, q.id),
     );
-    if (award === null) {
+    if (awardResult?.value === null) {
       throw new Error(`Award not found: ${q.id}`);
     }
 
     const result = await this.kv
       .atomic()
+      .check(awardResult)
       .delete(makeAwardsKey(this.namespace, q.id))
       .commit();
     if (!result.ok) {
       throw new Error(`Failed to revoke perk: ${q.id}`);
     }
 
-    return award;
+    return awardResult.value;
   }
 
   /**
@@ -105,18 +107,28 @@ export class DenoKVStorer implements Storer {
   public async doListQuery(q: ListQuery): Promise<StoredSummary[]> {
     const summaries: StoredSummary[] = [];
     for await (
-      const { value: award } of this.kv.list<Award>({
+      const awardResult of this.kv.list<Award>({
         prefix: makeAwardsKey(this.namespace),
       })
     ) {
-      if (q.awardee_id !== undefined && award.awardee_id !== q.awardee_id) {
+      if (
+        q.awardee_id !== undefined &&
+        awardResult.value.awardee_id !== q.awardee_id
+      ) {
         continue;
       }
 
-      const perk = await this.doPerkQuery({ perk_id: award.mint_id });
+      const perkResult = await this.kv
+        .get<MintedPerk>(
+          makePerksKey(this.namespace, awardResult.value.mint_id),
+        );
+      if (perkResult?.value === null) {
+        throw new Error(`Perk not found: ${awardResult.value.mint_id}`);
+      }
+
       summaries.push({
-        award,
-        perk,
+        award: awardResult.value,
+        perk: perkResult.value,
       });
     }
 
@@ -124,41 +136,55 @@ export class DenoKVStorer implements Storer {
   }
 
   public async doPreuseQuery(q: PreuseQuery): Promise<StoredSummary> {
-    const { value: award } = await this.kv.get<Award>(
+    const awardResult = await this.kv.get<Award>(
       makeAwardsKey(this.namespace, q.award_id),
     );
-    if (award === null) {
+    if (awardResult?.value === null) {
       throw new Error(`Award not found: ${q.award_id}`);
     }
 
-    const perk = await this.doPerkQuery({ perk_id: award.mint_id });
-    return { award, perk };
+    const perkResult = await this.kv.get<MintedPerk>(
+      makePerksKey(this.namespace, awardResult.value.mint_id),
+    );
+    if (perkResult?.value === null) {
+      throw new Error(`Perk not found: ${awardResult.value.mint_id}`);
+    }
+    return { award: awardResult.value, perk: perkResult.value };
   }
 
   public async doUseQuery(q: PreuseQuery): Promise<StoredSummary> {
-    const { value: award } = await this.kv.get<Award>(
+    const awardResult = await this.kv.get<Award>(
       makeAwardsKey(this.namespace, q.award_id),
     );
-    if (award === null) {
+    if (awardResult?.value === null) {
       throw new Error(`Award not found: ${q.award_id}`);
     }
 
-    const perk = await this.doPerkQuery({ perk_id: award.mint_id });
+    const perkResult = await this.kv.get<MintedPerk>(
+      makePerksKey(this.namespace, awardResult.value.mint_id),
+    );
+    if (perkResult?.value === null) {
+      throw new Error(`Perk not found: ${awardResult.value.mint_id}`);
+    }
+
     const { timestamp } = makeNewOptions();
-    if (perk.milliseconds + perk.minted_at > timestamp) {
+    if (
+      perkResult.value.milliseconds + perkResult.value.minted_at > timestamp
+    ) {
       throw new Error(`Perk has expired: ${q.award_id}`);
     }
-    if (perk.available <= 0) {
+    if (perkResult.value.available <= 0) {
       throw new Error(`Perk no longer available: ${q.award_id}`);
     }
 
     const result = await this.kv
       .atomic()
+      .check(awardResult, perkResult)
       .set(
-        makePerksKey(this.namespace, perk.id),
+        makePerksKey(this.namespace, perkResult.value.id),
         {
-          ...perk,
-          available: perk.available - 1,
+          ...perkResult.value,
+          available: perkResult.value.available - 1,
         },
       )
       .commit();
@@ -166,7 +192,7 @@ export class DenoKVStorer implements Storer {
       throw new Error(`Failed to use perk: ${q.award_id}`);
     }
 
-    return { award, perk };
+    return { award: awardResult.value, perk: perkResult.value };
   }
 
   public async doDiagnoseQuery(): Promise<Diagnosis> {
