@@ -1,4 +1,4 @@
-import "https://deno.land/std@0.167.0/dotenv/load.ts";
+import "https://deno.land/std@0.190.0/dotenv/load.ts";
 
 export const ENV = {
   // Required environment variables.

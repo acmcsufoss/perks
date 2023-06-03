@@ -71,7 +71,7 @@ deno install -rf --reload --allow-read=. --allow-write=. --allow-net https://den
 2. Update dependencies:
 
 ```bash
-udd **/*.ts
+udd */**/*.ts
 ```
 
 ---
