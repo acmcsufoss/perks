@@ -22,6 +22,13 @@ export class Dalle2 implements Provider {
   constructor(public readonly openaiAPIKey: string) {}
 
   public async use(r: ProviderRequest): Promise<APIInteractionResponse> {
+    if (!this.openaiAPIKey) {
+      return Promise.resolve({
+        type: InteractionResponseType.ChannelMessageWithSource,
+        data: { content: "DALL-E is not configured." },
+      });
+    }
+
     const prompt = r.query ?? makeRandomPrompt();
     const imageData = await generateOpenAIImage(this.openaiAPIKey, { prompt });
     const content = `Here is your generated image: ${imageData.data[0].url}`;

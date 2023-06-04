@@ -3,7 +3,7 @@
 // ngrok http 8000
 
 import { serve } from "./deps.ts";
-import { mustEnv } from "../env/mod.ts";
+import { ENV } from "../env/mod.ts";
 import { APP_PERKS } from "../env/app/mod.ts";
 import { providers } from "../env/providers/mod.ts";
 import { Registry } from "../../perks/provider/registry/mod.ts";
@@ -17,9 +17,6 @@ if (import.meta.main) {
 }
 
 async function main() {
-  // Retrieve the required environment variables.
-  const env = mustEnv();
-
   // Implement Storer class.
   const store = new DenoKVStorer(await Deno.openKv());
 
@@ -30,13 +27,20 @@ async function main() {
   const engine = new Engine(store, registry);
 
   // Overwrite the Discord Application Command.
-  const { ok } = await overwrite({ ...env, app: APP_PERKS });
-  if (!ok) {
-    throw new Error("Failed to overwrite Discord Application Command");
+  const overwritten = await overwrite({
+    botID: ENV.botID,
+    botToken: ENV.botToken,
+    app: APP_PERKS,
+  });
+  if (!overwritten.ok) {
+    throw new Error(
+      `Failed to overwrite Discord Application Command. Error: ${await overwritten
+        .text()}`,
+    );
   }
 
   // Create a new handler.
-  const handler = new Handler(engine, env.publicKey);
+  const handler = new Handler(engine, ENV.publicKey);
 
   serve(async (r: Request) => {
     const u = new URL(r.url);

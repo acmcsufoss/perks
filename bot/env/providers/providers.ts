@@ -1,15 +1,13 @@
 import type { Provider } from "../../../perks/provider/mod.ts";
 import type { APIApplicationCommandOptionChoice } from "../../deps.ts";
-import { mustEnv } from "../env.ts";
+import { ENV } from "../env.ts";
 
 import { Breakfast } from "./breakfast/mod.ts";
 import { Dalle2 } from "./dalle2/mod.ts";
 
-const env = mustEnv();
-
 export const providers: Provider[] = [
   new Breakfast(),
-  new Dalle2(env.openaiAPIKey),
+  new Dalle2(ENV.openaiAPIKey),
 ];
 
 /**
