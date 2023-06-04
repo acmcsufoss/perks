@@ -1,5 +1,5 @@
-import type { APIApplicationCommandOption } from "../../../deps.ts";
-import { ApplicationCommandOptionType } from "../../../deps.ts";
+import type { APIApplicationCommandOption } from "../../deps.ts";
+import { ApplicationCommandOptionType } from "../../deps.ts";
 
 export const REVOKE = "revoke";
 export const REVOKE_DESCRIPTION = "Revoke a perk";

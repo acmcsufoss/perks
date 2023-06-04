@@ -1,13 +1,10 @@
-import { InteractionResponseType } from "../../../deps.ts";
+import { InteractionResponseType } from "../../../../bot/deps.ts";
 import type {
   APIInteractionResponse,
   Image,
   ImageOptions,
-} from "../../../deps.ts";
-import type {
-  Provider,
-  ProviderRequest,
-} from "../../../../perks/provider/mod.ts";
+} from "../../../../bot/deps.ts";
+import type { Provider, ProviderRequest } from "../../mod.ts";
 
 /**
  * DALLE2 is the name of the provider.

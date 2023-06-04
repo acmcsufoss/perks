@@ -1,10 +1,6 @@
-import type { APIInteractionResponse } from "../../../deps.ts";
-import { InteractionResponseType } from "../../../deps.ts";
-
-import type {
-  Provider,
-  ProviderRequest,
-} from "../../../../perks/provider/mod.ts";
+import type { APIInteractionResponse } from "../../../../bot/deps.ts";
+import { InteractionResponseType } from "../../../../bot/deps.ts";
+import type { Provider, ProviderRequest } from "../../mod.ts";
 
 export const BREAKFAST = "breakfast";
 

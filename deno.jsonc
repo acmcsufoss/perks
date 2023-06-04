@@ -6,6 +6,6 @@
     "lock": "deno cache --lock-write bot/deps.ts",
     "udd": "deno run -Ar --allow-read=. --allow-write=. --allow-net https://deno.land/x/udd/main.ts bot/deps.ts && deno task lock",
     "all": "deno task udd && deno task lock && deno task lint && deno task fmt",
-    "start": "deno run -A --unstable bot/http/main.ts"
+    "start": "deno run -A --unstable main.ts"
   }
 }

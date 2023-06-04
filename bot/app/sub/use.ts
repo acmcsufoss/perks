@@ -1,5 +1,5 @@
-import type { APIApplicationCommandOption } from "../../../deps.ts";
-import { ApplicationCommandOptionType } from "../../../deps.ts";
+import type { APIApplicationCommandOption } from "../../deps.ts";
+import { ApplicationCommandOptionType } from "../../deps.ts";
 
 export const USE = "use";
 export const USE_DESCRIPTION = "Use a perk";

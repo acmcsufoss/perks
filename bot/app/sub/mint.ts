@@ -1,7 +1,7 @@
-import type { APIApplicationCommandOption } from "../../../deps.ts";
-import { ApplicationCommandOptionType } from "../../../deps.ts";
+import type { APIApplicationCommandOption } from "../../deps.ts";
+import { ApplicationCommandOptionType } from "../../deps.ts";
 
-import { PROVIDER_NAMES } from "../../providers/mod.ts";
+import { PROVIDER_NAMES } from "../../../perks/provider/providers/mod.ts";
 
 export const MINT = "mint";
 export const MINT_DESCRIPTION = "Mint a new perk";

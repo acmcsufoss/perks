@@ -1,4 +1,4 @@
-import type { RESTPostAPIApplicationCommandsJSONBody } from "../../deps.ts";
+import type { RESTPostAPIApplicationCommandsJSONBody } from "../deps.ts";
 
 import { SUB_MINT } from "./sub/mint.ts";
 import { SUB_UNMINT } from "./sub/unmint.ts";

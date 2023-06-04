@@ -5,16 +5,12 @@ import type {
 } from "../../deps.ts";
 import { ApplicationCommandOptionType } from "../../deps.ts";
 import type { EngineInterface, UseRequest } from "../../../perks/engine/mod.ts";
-import {
-  MINT,
-  MINT_MAX_USES,
-  MINT_MILLISECONDS,
-} from "../../env/app/sub/mint.ts";
-import { UNMINT, UNMINT_MINT_ID } from "../../env/app/sub/unmint.ts";
-import { AWARD, AWARD_MEMBER, AWARD_MINT_ID } from "../../env/app/sub/award.ts";
-import { REVOKE, REVOKE_AWARD_ID } from "../../env/app/sub/revoke.ts";
-import { LIST, LIST_AWARD_MEMBER } from "../../env/app/sub/list.ts";
-import { USE, USE_MINT_ID, USE_QUERY } from "../../env/app/sub/use.ts";
+import { MINT, MINT_MAX_USES, MINT_MILLISECONDS } from "../../app/sub/mint.ts";
+import { UNMINT, UNMINT_MINT_ID } from "../../app/sub/unmint.ts";
+import { AWARD, AWARD_MEMBER, AWARD_MINT_ID } from "../../app/sub/award.ts";
+import { REVOKE, REVOKE_AWARD_ID } from "../../app/sub/revoke.ts";
+import { LIST, LIST_AWARD_MEMBER } from "../../app/sub/list.ts";
+import { USE, USE_MINT_ID, USE_QUERY } from "../../app/sub/use.ts";
 import {
   makeAwardInteractionResponse,
   makeErrorInteractionResponse,

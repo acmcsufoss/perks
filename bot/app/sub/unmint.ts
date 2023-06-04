@@ -1,5 +1,5 @@
-import type { APIApplicationCommandOption } from "../../../deps.ts";
-import { ApplicationCommandOptionType } from "../../../deps.ts";
+import type { APIApplicationCommandOption } from "../../deps.ts";
+import { ApplicationCommandOptionType } from "../../deps.ts";
 
 export const UNMINT = "unmint";
 export const UNMINT_DESCRIPTION = "Unmint a perk";

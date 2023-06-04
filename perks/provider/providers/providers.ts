@@ -1,7 +1,6 @@
-import type { Provider } from "../../../perks/provider/mod.ts";
-import type { APIApplicationCommandOptionChoice } from "../../deps.ts";
-import { ENV } from "../env.ts";
-
+import type { APIApplicationCommandOptionChoice } from "../../../bot/deps.ts";
+import { ENV } from "../../../bot/env/mod.ts";
+import type { Provider } from "../mod.ts";
 import { Breakfast } from "./breakfast/mod.ts";
 import { Dalle2 } from "./dalle2/mod.ts";
 
