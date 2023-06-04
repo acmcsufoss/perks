@@ -40,7 +40,7 @@ export class Handler implements HandlerInterface {
 
         try {
           const response = await handle(this.engine, request);
-          return new Response(JSON.stringify(response));
+          return Response.json(response);
         } catch (err) {
           console.error(err);
           return new Response("Internal Server Error", { status: 500 });
