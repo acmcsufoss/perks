@@ -59,12 +59,19 @@ async function main() {
     switch (u.pathname) {
       case ENV.invitePath: {
         return Response.redirect(
-          `https://discord.com/api/oauth2/authorize?client_id=${ENV.botID}&permissions=2733747599424&scope=bot`,
+          `https://discord.com/api/oauth2/authorize?client_id=${ENV.botID}&scope=applications.commands`,
         );
       }
 
       default: {
-        return handler.handle(r);
+        return handler.handle(r)
+          .catch((error) => {
+            console.log(error);
+            return new Response(
+              "Internal Server Error",
+              { status: 500 },
+            );
+          });
       }
     }
   }, {

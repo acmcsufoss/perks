@@ -10,7 +10,7 @@ import { UNMINT, UNMINT_MINT_ID } from "../../app/sub/unmint.ts";
 import { AWARD, AWARD_MEMBER, AWARD_MINT_ID } from "../../app/sub/award.ts";
 import { REVOKE, REVOKE_AWARD_ID } from "../../app/sub/revoke.ts";
 import { LIST, LIST_AWARD_MEMBER } from "../../app/sub/list.ts";
-import { USE, USE_MINT_ID, USE_QUERY } from "../../app/sub/use.ts";
+import { USE, USE_AWARD_ID, USE_QUERY } from "../../app/sub/use.ts";
 import {
   makeAwardInteractionResponse,
   makeErrorInteractionResponse,
@@ -106,12 +106,12 @@ export async function handle(
     }
 
     case USE: {
-      const id = options[ApplicationCommandOptionType.String][USE_MINT_ID];
+      const id = options[ApplicationCommandOptionType.String][USE_AWARD_ID];
       if (!id) {
         return makeErrorInteractionResponse("No ID provided");
       }
 
-      const request: UseRequest = { mint_id: id };
+      const request: UseRequest = { award_id: id };
       const query = options[ApplicationCommandOptionType.String][USE_QUERY];
       if (query) {
         request.query = query;

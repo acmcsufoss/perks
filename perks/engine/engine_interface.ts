@@ -128,7 +128,7 @@ export type RevokeResponse = Award;
  * UseRequest is the request to the use method.
  */
 export interface UseRequest {
-  mint_id: ID;
+  award_id: ID;
   query?: string;
 }
 

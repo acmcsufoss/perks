@@ -27,7 +27,7 @@ export class Engine implements EngineInterface {
     const minted = await this.storer.doMintQuery({
       type: r.type,
       minter_id: r.minter_id,
-      // TODO: Get default max_uses and/or milliseconds [if-needed] from doPerkQuery.
+      // TODO: Get default max_uses and/or milliseconds [if-needed] from existing perks.
       max_uses: r.max_uses ?? 10,
       milliseconds: r.milliseconds ?? 3.6e6,
     });
@@ -108,8 +108,7 @@ export class Engine implements EngineInterface {
   }
 
   public async use(r: UseRequest): Promise<UseResponse> {
-    // TODO: Wait what...? Mismatched ID's??
-    const preused = await this.storer.doPreuseQuery({ award_id: r.mint_id });
+    const preused = await this.storer.doPreuseQuery({ award_id: r.award_id });
     const isAvailable = parseIsAvailable(preused.perk);
     if (isAvailable) {
       throw new Error("Perk is no longer available");
