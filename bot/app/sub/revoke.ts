@@ -1,4 +1,7 @@
-import type { APIApplicationCommandOption } from "../../deps.ts";
+import type {
+  APIApplicationCommandInteractionDataOption,
+  APIApplicationCommandOption,
+} from "../../deps.ts";
 import { ApplicationCommandOptionType } from "../../deps.ts";
 
 export const REVOKE = "revoke";
@@ -20,3 +23,21 @@ export const SUB_REVOKE: APIApplicationCommandOption = {
     },
   ],
 };
+
+/**
+ * parseRevokeOptions parses the options for the revoke command.
+ */
+export function parseRevokeOptions(
+  options: APIApplicationCommandInteractionDataOption[],
+): {
+  [REVOKE_AWARD_ID]: string;
+} {
+  const idOption = options.find((option) => option.name === REVOKE_AWARD_ID);
+  if (idOption?.type !== ApplicationCommandOptionType.String) {
+    throw new Error("Invalid ID type");
+  }
+
+  return {
+    award_id: idOption.value,
+  };
+}

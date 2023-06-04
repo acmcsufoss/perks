@@ -1,4 +1,7 @@
-import type { APIApplicationCommandOption } from "../../deps.ts";
+import type {
+  APIApplicationCommandInteractionDataOption,
+  APIApplicationCommandOption,
+} from "../../deps.ts";
 import { ApplicationCommandOptionType } from "../../deps.ts";
 
 import { PROVIDER_NAMES } from "../../../perks/provider/providers/mod.ts";
@@ -41,3 +44,42 @@ export const SUB_MINT: APIApplicationCommandOption = {
     },
   ],
 };
+
+/**
+ * parseMintOptions parses the options for the mint command.
+ */
+export function parseMintOptions(
+  options: APIApplicationCommandInteractionDataOption[],
+): {
+  [MINT_NAME]: string;
+  [MINT_MAX_USES]?: number;
+  [MINT_MILLISECONDS]?: number;
+} {
+  const nameOption = options.find((option) => option.name === MINT_NAME);
+  if (nameOption?.type !== ApplicationCommandOptionType.String) {
+    throw new Error("Invalid name type");
+  }
+
+  const maxUsesOption = options.find((option) => option.name === MINT_MAX_USES);
+  if (
+    maxUsesOption && maxUsesOption.type !== ApplicationCommandOptionType.Integer
+  ) {
+    throw new Error("Invalid max uses type");
+  }
+
+  const millisecondsOption = options.find(
+    (option) => option.name === MINT_MILLISECONDS,
+  );
+  if (
+    millisecondsOption &&
+    millisecondsOption.type !== ApplicationCommandOptionType.Integer
+  ) {
+    throw new Error("Invalid milliseconds type");
+  }
+
+  return {
+    name: nameOption.value,
+    max_uses: maxUsesOption?.value,
+    milliseconds: millisecondsOption?.value,
+  };
+}

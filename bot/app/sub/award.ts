@@ -1,4 +1,7 @@
-import type { APIApplicationCommandOption } from "../../deps.ts";
+import type {
+  APIApplicationCommandInteractionDataOption,
+  APIApplicationCommandOption,
+} from "../../deps.ts";
 import { ApplicationCommandOptionType } from "../../deps.ts";
 
 export const AWARD = "award";
@@ -28,3 +31,30 @@ export const SUB_AWARD: APIApplicationCommandOption = {
     },
   ],
 };
+
+/**
+ * parseAwardOptions parses the options for the award command.
+ */
+export function parseAwardOptions(
+  options: APIApplicationCommandInteractionDataOption[],
+): {
+  [AWARD_MINT_ID]: string;
+  [AWARD_MEMBER]?: string;
+} {
+  const idOption = options.find((option) => option.name === AWARD_MINT_ID);
+  if (idOption?.type !== ApplicationCommandOptionType.String) {
+    throw new Error("Invalid ID type");
+  }
+
+  const awardeeOption = options.find((option) => option.name === AWARD_MEMBER);
+  if (
+    awardeeOption && awardeeOption.type !== ApplicationCommandOptionType.User
+  ) {
+    throw new Error("Invalid awardee type");
+  }
+
+  return {
+    mint_id: idOption.value,
+    member: awardeeOption?.value,
+  };
+}

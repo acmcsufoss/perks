@@ -1,4 +1,7 @@
-import type { APIApplicationCommandOption } from "../../deps.ts";
+import type {
+  APIApplicationCommandInteractionDataOption,
+  APIApplicationCommandOption,
+} from "../../deps.ts";
 import { ApplicationCommandOptionType } from "../../deps.ts";
 
 export const UNMINT = "unmint";
@@ -20,3 +23,21 @@ export const SUB_UNMINT: APIApplicationCommandOption = {
     },
   ],
 };
+
+/**
+ * parseUnmintOptions parses the options for the unmint command.
+ */
+export function parseUnmintOptions(
+  options: APIApplicationCommandInteractionDataOption[],
+): {
+  [UNMINT_MINT_ID]: string;
+} {
+  const idOption = options.find((option) => option.name === UNMINT_MINT_ID);
+  if (idOption?.type !== ApplicationCommandOptionType.String) {
+    throw new Error("Invalid ID type");
+  }
+
+  return {
+    mint_id: idOption.value,
+  };
+}

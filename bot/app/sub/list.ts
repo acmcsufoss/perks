@@ -1,4 +1,7 @@
-import type { APIApplicationCommandOption } from "../../deps.ts";
+import type {
+  APIApplicationCommandInteractionDataOption,
+  APIApplicationCommandOption,
+} from "../../deps.ts";
 import { ApplicationCommandOptionType } from "../../deps.ts";
 
 export const LIST = "list";
@@ -20,3 +23,25 @@ export const SUB_LIST: APIApplicationCommandOption = {
     },
   ],
 };
+
+/**
+ * parseListOptions parses the options for the list command.
+ */
+export function parseListOptions(
+  options: APIApplicationCommandInteractionDataOption[],
+): {
+  [LIST_AWARD_MEMBER]?: string;
+} {
+  const awardeeOption = options.find((option) =>
+    option.name === LIST_AWARD_MEMBER
+  );
+  if (
+    awardeeOption && awardeeOption.type !== ApplicationCommandOptionType.User
+  ) {
+    throw new Error("Invalid awardee type");
+  }
+
+  return {
+    awardee: awardeeOption?.value,
+  };
+}

@@ -1,4 +1,7 @@
-import type { APIApplicationCommandOption } from "../../deps.ts";
+import type {
+  APIApplicationCommandInteractionDataOption,
+  APIApplicationCommandOption,
+} from "../../deps.ts";
 import { ApplicationCommandOptionType } from "../../deps.ts";
 
 export const USE = "use";
@@ -28,3 +31,28 @@ export const SUB_USE: APIApplicationCommandOption = {
     },
   ],
 };
+
+/**
+ * parseUseOptions parses the options for the use command.
+ */
+export function parseUseOptions(
+  options: APIApplicationCommandInteractionDataOption[],
+): {
+  [USE_AWARD_ID]: string;
+  [USE_QUERY]?: string;
+} {
+  const idOption = options.find((option) => option.name === USE_AWARD_ID);
+  if (idOption?.type !== ApplicationCommandOptionType.String) {
+    throw new Error("Invalid ID type");
+  }
+
+  const queryOption = options.find((option) => option.name === USE_QUERY);
+  if (queryOption && queryOption.type !== ApplicationCommandOptionType.String) {
+    throw new Error("Invalid query type");
+  }
+
+  return {
+    award_id: idOption.value,
+    query: queryOption?.value,
+  };
+}
