@@ -1,8 +1,9 @@
-import type { APIInteractionResponse } from "../../../../bot/deps.ts";
-import { InteractionResponseType } from "../../../../bot/deps.ts";
-
-import type { Image, ImageOptions } from "./deps.ts";
-
+import { InteractionResponseType } from "../../../deps.ts";
+import type {
+  APIInteractionResponse,
+  Image,
+  ImageOptions,
+} from "../../../deps.ts";
 import type {
   Provider,
   ProviderRequest,

@@ -1,5 +1,5 @@
-import type { APIInteractionResponse } from "../../../../bot/deps.ts";
-import { InteractionResponseType } from "../../../../bot/deps.ts";
+import type { APIInteractionResponse } from "../../../deps.ts";
+import { InteractionResponseType } from "../../../deps.ts";
 
 import type {
   Provider,
