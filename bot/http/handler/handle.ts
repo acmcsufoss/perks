@@ -4,8 +4,7 @@ import type {
   APIInteractionResponse,
 } from "../../deps.ts";
 import { ApplicationCommandOptionType } from "../../deps.ts";
-
-import type { Engine, UseRequest } from "../../../perks/engine/mod.ts";
+import type { EngineInterface, UseRequest } from "../../../perks/engine/mod.ts";
 import {
   MINT,
   MINT_MAX_USES,
@@ -25,8 +24,11 @@ import {
   makeUnmintInteractionResponse,
 } from "./responses.ts";
 
+/**
+ * handle handles an interaction.
+ */
 export async function handle(
-  engine: Engine,
+  engine: EngineInterface,
   interaction: APIChatInputApplicationCommandInteraction,
 ): Promise<APIInteractionResponse> {
   if (!interaction.data.options || interaction.data.options.length === 0) {

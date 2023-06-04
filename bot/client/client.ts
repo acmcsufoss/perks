@@ -1,5 +1,4 @@
 import type { RESTPostAPIApplicationCommandsJSONBody } from "../deps.ts";
-import { contentType } from "../deps.ts";
 
 const DISCORD_API_URL = "https://discord.com/api/v8";
 
@@ -28,7 +27,7 @@ export async function overwrite(
 ): Promise<Response> {
   const url = makeRegisterCommandsURL(botID);
   const headers = new Headers();
-  headers.set("Content-Type", contentType("json"));
+  headers.set("Content-Type", "application/json");
   headers.set("Authorization", makeBotAuthorization(botToken));
   const body = JSON.stringify(app);
   return await fetch(url, { method: "POST", headers, body });

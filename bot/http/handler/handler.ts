@@ -3,10 +3,10 @@ import {
   InteractionResponseType,
   InteractionType,
   isChatInputApplicationCommandInteraction,
+  nacl,
 } from "../../deps.ts";
-import type { Engine } from "./../../../perks/engine/mod.ts";
+import type { EngineInterface } from "./../../../perks/engine/mod.ts";
 import type { HandlerInterface } from "./handler_interface.ts";
-import { nacl } from "./deps.ts";
 import { handle } from "./handle.ts";
 
 /**
@@ -16,7 +16,7 @@ import { handle } from "./handle.ts";
  */
 export class Handler implements HandlerInterface {
   constructor(
-    private readonly engine: Engine,
+    private readonly engine: EngineInterface,
     private readonly publicKey: string,
   ) {}
 
@@ -93,6 +93,8 @@ async function verify(
     };
   }
 
+  // TweetNaCl is a cryptography library that we use to verify requests
+  // from Discord.
   const body = await request.text();
   const valid = nacl.sign.detached.verify(
     new TextEncoder().encode(timestamp + body),

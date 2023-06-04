@@ -22,7 +22,11 @@ BOT_ID=""
 2. Run the bot server:
 
 ```bash
-deno run -A --unstable bot/http/main.ts
+deno run -Ar --unstable bot/http/main.ts
+
+# Or
+
+deno task start
 ```
 
 > **Note** Copy the `https` URL and add it to the interactions endpoint URL on
