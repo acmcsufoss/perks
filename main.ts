@@ -20,16 +20,19 @@ async function main() {
   // In development mode, we use ngrok to expose the server to the Internet.
   if (ENV.dev) {
     doNgrok()
-      .then((url) =>
+      .then((url) => {
+        console.log(`Interactions endpoint URL: ${url}`);
         console.log(
-          `Interactions endpoint URL: ${url} => https://discord.com/developers/applications/${ENV.botID}/information`,
-        )
-      )
+          `Discord application information URL: https://discord.com/developers/applications/${ENV.botID}/information`,
+        );
+        console.log(`Invite URL: ${url}${ENV.invitePath}`);
+      })
       .catch((error) => console.error(error));
   }
 
   // Implement Storer class.
-  const store = new DenoKVStorer(await Deno.openKv());
+  const kv = await Deno.openKv(ENV.dev ? "./kv.db" : undefined);
+  const store = new DenoKVStorer(kv, ["perks"]);
 
   // Create a Perks provider registry.
   const registry = new Registry(providers);

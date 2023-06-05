@@ -111,6 +111,7 @@ export class Engine implements EngineInterface {
     const preused = await this.storer.doPreuseQuery({ award_id: r.award_id });
     const isAvailable = parseIsAvailable(preused.perk);
     if (isAvailable) {
+      console.log({ preused });
       throw new Error("Perk is no longer available");
     }
 
@@ -129,8 +130,32 @@ export class Engine implements EngineInterface {
   }
 }
 
-function parseIsAvailable(perk: MintedPerk, date = new Date()): boolean {
-  return perk.available > 0 &&
-    !(perk.milliseconds > 0 && perk.activated &&
-      date.getTime() - new Date(perk.activated).getTime() > perk.milliseconds);
+/**
+ * parseIsAvailable checks if a perk is currently available.
+ *
+ * @todo Unit test this function in ./engine_test.ts.
+ */
+export function parseIsAvailable(perk: MintedPerk, date = new Date()) {
+  // Get the current time in milliseconds.
+  const currentTime = date.getTime();
+
+  // Check if perk is available and not expired.
+  const isAvailable = perk.available > 0 &&
+    !(perk.milliseconds > 0 && !perk.activated || perk.activated &&
+        currentTime - getActivatedTime(perk) > perk.milliseconds);
+
+  return isAvailable;
+}
+
+/**
+ * getActivatedTime returns the activation time of the perk in milliseconds.
+ */
+function getActivatedTime(perk: MintedPerk) {
+  // If the perk is activated, return the activation time in milliseconds.
+  if (perk.activated) {
+    return new Date(perk.activated).getTime();
+  }
+
+  // Perk is not activated, return 0.
+  return 0;
 }
