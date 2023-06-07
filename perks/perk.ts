@@ -69,3 +69,31 @@ export interface Perk {
   /** default_milliseconds is the default number of milliseconds this perk is valid for. */
   default_milliseconds: number;
 }
+
+/**
+ * parseIsAvailable checks if a perk is currently available.
+ */
+export function parseIsAvailable(perk: MintedPerk, date = new Date()) {
+  // Get the current time in milliseconds.
+  const currentTime = date.getTime();
+
+  // Check if perk is available and not expired.
+  const isAvailable = perk.available > 0 &&
+    !(perk.milliseconds > 0 && !perk.activated || perk.activated &&
+        currentTime - getActivatedTime(perk) > perk.milliseconds);
+
+  return isAvailable;
+}
+
+/**
+ * getActivatedTime returns the activation time of the perk in milliseconds.
+ */
+function getActivatedTime(perk: MintedPerk) {
+  // If the perk is activated, return the activation time in milliseconds.
+  if (perk.activated) {
+    return new Date(perk.activated).getTime();
+  }
+
+  // Perk is not activated, return 0.
+  return 0;
+}
