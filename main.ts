@@ -54,7 +54,12 @@ async function main() {
   }
 
   // Create a new handler.
-  const handler = new Handler(engine, ENV.publicKey);
+  const handler = new Handler(
+    engine,
+    ENV.adminRoleIDs,
+    ENV.memberRoleIDs,
+    ENV.publicKey,
+  );
 
   // Start the server.
   serve((r: Request) => {
