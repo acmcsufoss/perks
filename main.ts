@@ -38,7 +38,12 @@ async function main() {
   const registry = new Registry(providers);
 
   // Create a Perks engine.
-  const engine = new Engine(store, registry);
+  const engine = new Engine(
+    store,
+    registry,
+    ENV.adminRoleIDs,
+    ENV.memberRoleIDs,
+  );
 
   // Overwrite the Discord Application Command.
   const overwritten = await overwrite({
@@ -54,12 +59,7 @@ async function main() {
   }
 
   // Create a new handler.
-  const handler = new Handler(
-    engine,
-    ENV.adminRoleIDs,
-    ENV.memberRoleIDs,
-    ENV.publicKey,
-  );
+  const handler = new Handler(engine, ENV.publicKey);
 
   // Start the server.
   serve((r: Request) => {

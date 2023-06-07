@@ -24,8 +24,6 @@ import {
  */
 export async function handle(
   engine: EngineInterface,
-  adminRoleIDs: string[],
-  memberRoleIDs: string[],
   interaction: APIChatInputApplicationCommandInteraction,
 ): Promise<APIInteractionResponse> {
   if (!interaction.data.options || interaction.data.options.length === 0) {
@@ -53,18 +51,11 @@ export async function handle(
         throw new Error("Invalid option type");
       }
 
-      const isAdmin = interaction.member.roles
-        .some((role) => adminRoleIDs.includes(role));
-      if (!isAdmin) {
-        return makeErrorInteractionResponse(
-          "Become a board member to gain access to this command.",
-        );
-      }
-
       const options = parseMintOptions(subcommandOptions.options);
       const result = await engine.mint({
         type: options.name,
         minter_id: interaction.member.user.id,
+        minter_role_ids: interaction.member.roles,
         max_uses: options.max_uses,
         milliseconds: options.milliseconds,
       });

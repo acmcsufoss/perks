@@ -21,9 +21,17 @@ export class Engine implements EngineInterface {
   constructor(
     public readonly storer: Storer,
     public readonly registry: Registry,
+    public readonly adminRoleIDs: string[],
+    public readonly memberRoleIDs: string[],
   ) {}
 
   public async mint(r: MintRequest): Promise<MintResponse> {
+    const isAdmin = r.minter_role_ids
+      .some((role) => this.adminRoleIDs.includes(role));
+    if (!isAdmin) {
+      throw new Error("Only admins can mint perks!");
+    }
+
     const minted = await this.storer.doMintQuery({
       type: r.type,
       minter_id: r.minter_id,
@@ -44,6 +52,12 @@ export class Engine implements EngineInterface {
   }
 
   public async unmint(r: UnmintRequest): Promise<UnmintResponse> {
+    const isAdmin = r.minter_role_ids
+      .some((role) => this.adminRoleIDs.includes(role));
+    if (!isAdmin) {
+      throw new Error("Only admins can unmint perks!");
+    }
+
     const unminted = await this.storer.doUnmintQuery({ id: r.id });
     return {
       id: unminted.id,
@@ -58,6 +72,12 @@ export class Engine implements EngineInterface {
   }
 
   public async award(r: AwardRequest): Promise<AwardResponse> {
+    const isAdmin = r.awarder_role_ids
+      .some((role) => this.adminRoleIDs.includes(role));
+    if (!isAdmin) {
+      throw new Error("Only admins can award perks!");
+    }
+
     const awarded = await this.storer.doAwardQuery({
       awarder_id: r.awarder_id,
       awardee_id: r.awardee_id,
@@ -73,6 +93,18 @@ export class Engine implements EngineInterface {
   }
 
   public async list(r: ListRequest): Promise<ListResponse> {
+    const isAdmin = r.awarder_role_ids
+      .some((role) => this.adminRoleIDs.includes(role));
+    const isMember = r.awarder_role_ids
+      .some((role) => this.memberRoleIDs.includes(role));
+    const isSelf = r.awardee_id === undefined || r.actor_id === r.awardee_id;
+    if (!isAdmin && !isSelf) {
+      throw new Error("Only admins and self can list perks!");
+    }
+    if (!isMember) {
+      throw new Error("Only members can list perks!");
+    }
+
     const awards = await this.storer.doListQuery({ awardee_id: r.awardee_id });
     return {
       awards: awards.map((a) => ({
@@ -98,6 +130,12 @@ export class Engine implements EngineInterface {
   }
 
   public async revoke(r: RevokeRequest): Promise<RevokeResponse> {
+    const isAdmin = r.awarder_role_ids
+      .some((role) => this.adminRoleIDs.includes(role));
+    if (!isAdmin) {
+      throw new Error("Only admins can revoke perks!");
+    }
+
     const revoked = await this.storer.doRevokeQuery({ id: r.award_id });
     return {
       id: revoked.id,
@@ -109,10 +147,21 @@ export class Engine implements EngineInterface {
   }
 
   public async use(r: UseRequest): Promise<UseResponse> {
+    const isMember = r.awarder_role_ids
+      .some((role) => this.memberRoleIDs.includes(role));
+    if (!isMember) {
+      throw new Error("Only members can use perks!");
+    }
+
     const preused = await this.storer.doPreuseQuery({ award_id: r.award_id });
     const isAvailable = parseIsAvailable(preused.perk);
     if (isAvailable) {
       throw new Error("Perk is no longer available");
+    }
+
+    const isSelf = preused.award.awardee_id === r.actor_id;
+    if (!isSelf) {
+      throw new Error("You may only use perks that have been awarded to you!");
     }
 
     const provider = this.registry.get(preused.perk.type);

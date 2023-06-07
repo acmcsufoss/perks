@@ -50,9 +50,14 @@ export interface MintRequest {
   type: string;
 
   /**
-   * minter is the ID of the user minting the perk.
+   * minter_id is the ID of the user who minted this perk.
    */
   minter_id: ID;
+
+  /**
+   * minter_role_ids is the list of role IDs the minter has.
+   */
+  minter_role_ids: string[];
 
   /**
    * max_uses is the maximum number of times this perk can be consumed.
@@ -73,7 +78,12 @@ export type MintResponse = MintedPerk;
 /**
  * UnmintRequest is the request to the unmint method.
  */
-export type UnmintRequest = Pick<MintedPerk, "id">;
+export interface UnmintRequest extends Pick<MintedPerk, "id"> {
+  /**
+   * minter_role_ids is the list of role IDs the minter has.
+   */
+  minter_role_ids: string[];
+}
 
 /**
  * UnmintResponse is the response from the unmint method.
@@ -83,7 +93,12 @@ export type UnmintResponse = MintedPerk;
 /**
  * AwardRequest is the request to the award method.
  */
-export type AwardRequest = Omit<Award, "id" | "awarded_at">;
+export interface AwardRequest extends Omit<Award, "id" | "awarded_at"> {
+  /**
+   * awarder_role_ids is the list of role IDs the awarder has.
+   */
+  awarder_role_ids: string[];
+}
 
 /**
  * AwardResponse is the response from the award method.
@@ -94,7 +109,14 @@ export type AwardResponse = Award;
  * AwardSummary is a summary of an award.
  */
 export interface AwardSummary {
+  /**
+   * perk is the minted perk.
+   */
   perk: MintedPerk;
+
+  /**
+   * award is the award of the minted perk.
+   */
   award: Award;
 }
 
@@ -102,6 +124,19 @@ export interface AwardSummary {
  * ListRequest is the request to the list method.
  */
 export interface ListRequest {
+  /**
+   * actor_id is the ID of the user who is listing awards.
+   */
+  actor_id: ID;
+
+  /**
+   * awarder_role_ids is the list of role IDs the awarder has.
+   */
+  awarder_role_ids: string[];
+
+  /**
+   * awardee_id is the ID of the user to list awards for.
+   */
   awardee_id?: ID;
 }
 
@@ -116,7 +151,15 @@ export interface ListResponse {
  * RevokeRequest is the request to the revoke method.
  */
 export interface RevokeRequest {
+  /**
+   * award_id is the ID of the award to revoke.
+   */
   award_id: ID;
+
+  /**
+   * awarder_role_ids is the list of role IDs the awarder has.
+   */
+  awarder_role_ids: string[];
 }
 
 /**
@@ -128,7 +171,24 @@ export type RevokeResponse = Award;
  * UseRequest is the request to the use method.
  */
 export interface UseRequest {
+  /**
+   * award_id is the ID of the award to use.
+   */
   award_id: ID;
+
+  /**
+   * actor_id is the ID of the user who is using the award.
+   */
+  actor_id: ID;
+
+  /**
+   * awarder_role_ids is the list of role IDs the awarder has.
+   */
+  awarder_role_ids: string[];
+
+  /**
+   * query is the query string to use.
+   */
   query?: string;
 }
 

@@ -17,8 +17,6 @@ import { handle } from "./handle.ts";
 export class Handler implements HandlerInterface {
   constructor(
     private readonly engine: EngineInterface,
-    private readonly adminRoleIDs: string[],
-    private readonly memberRoleIDs: string[],
     private readonly publicKey: string,
   ) {}
 
@@ -43,8 +41,6 @@ export class Handler implements HandlerInterface {
         try {
           const response = await handle(
             this.engine,
-            this.adminRoleIDs,
-            this.memberRoleIDs,
             request,
           );
           return Response.json(response);
