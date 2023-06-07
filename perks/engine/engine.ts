@@ -27,9 +27,10 @@ export class Engine implements EngineInterface {
     const minted = await this.storer.doMintQuery({
       type: r.type,
       minter_id: r.minter_id,
+
       // TODO: Get default max_uses and/or milliseconds [if-needed] from existing perks.
-      max_uses: r.max_uses ?? 10,
-      milliseconds: r.milliseconds ?? 3.6e6,
+      max_uses: r.max_uses ?? 100, // 100 uses
+      milliseconds: r.milliseconds ?? 2.6298e9, // 1 month
     });
     return {
       id: minted.id,
@@ -111,7 +112,6 @@ export class Engine implements EngineInterface {
     const preused = await this.storer.doPreuseQuery({ award_id: r.award_id });
     const isAvailable = parseIsAvailable(preused.perk);
     if (isAvailable) {
-      console.log({ preused }); // TODO: Remove this line.
       throw new Error("Perk is no longer available");
     }
 

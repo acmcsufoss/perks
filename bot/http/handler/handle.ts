@@ -53,7 +53,7 @@ export async function handle(
 
       const options = parseMintOptions(subcommandOptions.options);
       const result = await engine.mint({
-        type: name,
+        type: options.name,
         minter_id: interaction.member.user.id,
         max_uses: options.max_uses,
         milliseconds: options.milliseconds,

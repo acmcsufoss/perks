@@ -1,4 +1,5 @@
 import type { Award, MintedPerk } from "../../perks/mod.ts";
+import { parseIsAvailable } from "../../perks/perk.ts";
 import type {
   AwardQuery,
   Diagnosis,
@@ -168,12 +169,8 @@ export class DenoKVStorer implements Storer {
     }
 
     const { timestamp } = makeNewOptions();
-    if (
-      perkResult.value.milliseconds + perkResult.value.minted_at > timestamp
-    ) {
-      throw new Error(`Perk has expired: ${q.award_id}`);
-    }
-    if (perkResult.value.available <= 0) {
+    const isAvailable = parseIsAvailable(perkResult.value, new Date(timestamp));
+    if (isAvailable) {
       throw new Error(`Perk no longer available: ${q.award_id}`);
     }
 
