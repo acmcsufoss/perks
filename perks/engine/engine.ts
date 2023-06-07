@@ -154,8 +154,11 @@ export class Engine implements EngineInterface {
     }
 
     const preused = await this.storer.doPreuseQuery({ award_id: r.award_id });
+    console.log({ preused }); // TODO: Delete this line.
+
+    // TODO: Fix parseIsAvailable implementation.
     const isAvailable = parseIsAvailable(preused.perk);
-    if (isAvailable) {
+    if (!isAvailable) {
       throw new Error("Perk is no longer available");
     }
 

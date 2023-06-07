@@ -74,16 +74,11 @@ export async function handle(
         throw new Error("Invalid option type");
       }
 
-      const isAdmin = interaction.member.roles
-        .some((role) => adminRoleIDs.includes(role));
-      if (!isAdmin) {
-        return makeErrorInteractionResponse(
-          "Become a board member to gain access to this command.",
-        );
-      }
-
       const options = parseUnmintOptions(subcommandOptions.options);
-      const result = await engine.unmint({ id: options.mint_id });
+      const result = await engine.unmint({
+        id: options.mint_id,
+        minter_role_ids: interaction.member.roles,
+      });
       return makeUnmintInteractionResponse(result);
     }
 
@@ -98,19 +93,12 @@ export async function handle(
         throw new Error("Invalid option type");
       }
 
-      const isAdmin = interaction.member.roles
-        .some((role) => adminRoleIDs.includes(role));
-      if (!isAdmin) {
-        return makeErrorInteractionResponse(
-          "Become a board member to gain access to this command.",
-        );
-      }
-
       const options = parseAwardOptions(subcommandOptions.options);
       const result = await engine.award({
         mint_id: options.mint_id,
         awarder_id: interaction.member.user.id,
         awardee_id: options.member ?? interaction.member.user.id,
+        awarder_role_ids: interaction.member.roles,
       });
       return makeAwardInteractionResponse(result);
     }
@@ -126,16 +114,11 @@ export async function handle(
         throw new Error("Invalid option type");
       }
 
-      const isAdmin = interaction.member.roles
-        .some((role) => adminRoleIDs.includes(role));
-      if (!isAdmin) {
-        return makeErrorInteractionResponse(
-          "Become a board member to gain access to this command.",
-        );
-      }
-
       const options = parseRevokeOptions(subcommandOptions.options);
-      const result = await engine.revoke({ award_id: options.award_id });
+      const result = await engine.revoke({
+        award_id: options.award_id,
+        awarder_role_ids: interaction.member.roles,
+      });
       return makeRevokeInteractionResponse(result);
     }
 
@@ -151,26 +134,11 @@ export async function handle(
       }
 
       const options = parseListOptions(subcommandOptions.options);
-      options.awardee ??= interaction.member.user.id;
-      const isAdmin = interaction.member.roles
-        .some((role) => adminRoleIDs.includes(role));
-      const isMember = interaction.member.roles
-        .some((role) => memberRoleIDs.includes(role));
-      const isSelf = interaction.member.user.id ===
-        options.awardee;
-      if (!isAdmin && !isMember) {
-        return makeErrorInteractionResponse(
-          "Become a member to gain access to this command.",
-        );
-      }
-
-      if (!isAdmin && !isSelf) {
-        return makeErrorInteractionResponse(
-          "You can only view your own awards.",
-        );
-      }
-
-      const result = await engine.list({ awardee_id: options.awardee });
+      const result = await engine.list({
+        awardee_id: options.awardee,
+        actor_id: interaction.member.user.id,
+        awarder_role_ids: interaction.member.roles,
+      });
       return makeListInteractionResponse(result);
     }
 
@@ -185,13 +153,12 @@ export async function handle(
         throw new Error("Invalid option type");
       }
 
-      // TODO: Check if the user is a member of the server.
-      // TODO: Pass member data to the engine by updating the use method.
-
       const options = parseUseOptions(subcommandOptions.options);
       const result = await engine.use({
         award_id: options.award_id,
         query: options.query,
+        actor_id: interaction.member.user.id,
+        awarder_role_ids: interaction.member.roles,
       });
       return result.data;
     }
