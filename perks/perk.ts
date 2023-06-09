@@ -81,8 +81,9 @@ export function parseIsAvailable(perk: MintedPerk, date = new Date()) {
   const activatedAt = getActivatedTime(perk);
 
   // Check if perk is expired.
-  const isExpired = perk.milliseconds > 0 &&
-    currentTime - activatedAt > perk.milliseconds;
+  const isExpired = perk.milliseconds !== 0 &&
+    activatedAt !== 0 &&
+    (currentTime - activatedAt > perk.milliseconds);
 
   // Check if a perk is still active.
   const isActive = perk.max_uses === 0 || perk.available > 0;

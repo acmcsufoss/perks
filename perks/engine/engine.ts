@@ -168,7 +168,7 @@ export class Engine implements EngineInterface {
       throw new Error("Perk provider not found");
     }
 
-    const response = await provider.use({ ...preused });
+    const response = await provider.use({ ...preused, query: r.query });
     if (!response) {
       throw new Error("Perk not used");
     }

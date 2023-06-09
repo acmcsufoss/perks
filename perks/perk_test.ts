@@ -37,9 +37,10 @@ const TEST_EXPIRED_PERK: MintedPerk = {
   type: "test",
   minter_id: "1",
   minted_at: "2023-01-01T00:00:00.000Z",
-  max_uses: 1,
+  max_uses: 100,
   milliseconds: 1,
   available: 1,
+  activated: "2023-01-01T00:00:00.000Z",
 };
 
 Deno.test("parseIsAvailable returns true when available", () => {

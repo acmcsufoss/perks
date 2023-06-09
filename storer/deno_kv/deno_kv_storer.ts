@@ -172,15 +172,17 @@ export class DenoKVStorer implements Storer {
       throw new Error(`Perk no longer available: ${q.award_id}`);
     }
 
+    const newPerk: MintedPerk = {
+      ...perkResult.value,
+      available: perkResult.value.available - 1,
+      activated: perkResult.value.activated ?? timestamp,
+    };
     const result = await this.kv
       .atomic()
       .check(awardResult, perkResult)
       .set(
         makePerksKey(this.namespace, perkResult.value.id),
-        {
-          ...perkResult.value,
-          available: perkResult.value.available - 1,
-        },
+        newPerk,
       )
       .commit();
     if (!result.ok) {
