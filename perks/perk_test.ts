@@ -22,6 +22,16 @@ const TEST_INFINITE_PERK: MintedPerk = {
   available: -1,
 };
 
+const TEST_REAL_PERK: MintedPerk = {
+  id: "real_perk_id",
+  minted_at: "2023-06-09T01:40:54.117Z",
+  type: "breakfast",
+  minter_id: "real_perk_minter_id",
+  milliseconds: 0,
+  max_uses: 0,
+  available: 0,
+};
+
 const TEST_UNAVAILABLE_PERK: MintedPerk = {
   id: "1",
   type: "test",
@@ -49,6 +59,10 @@ Deno.test("parseIsAvailable returns true when available", () => {
 
 Deno.test("parseIsAvailable returns true when infinite", () => {
   assertEquals(parseIsAvailable(TEST_INFINITE_PERK), true);
+});
+
+Deno.test("parseIsAvailable returns true when real", () => {
+  assertEquals(parseIsAvailable(TEST_REAL_PERK), true);
 });
 
 Deno.test("parseIsAvailable returns false when not available", () => {
