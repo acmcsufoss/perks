@@ -35,10 +35,9 @@ export class Engine implements EngineInterface {
     const minted = await this.storer.doMintQuery({
       type: r.type,
       minter_id: r.minter_id,
-
-      // TODO: Get default max_uses and/or milliseconds [if-needed] from existing perks.
-      max_uses: r.max_uses ?? 100, // 100 uses
-      milliseconds: r.milliseconds ?? 2.6298e9, // 1 month
+      // By default, max_uses and milliseconds are infinite.
+      max_uses: r.max_uses ?? 0,
+      milliseconds: r.milliseconds ?? 0,
     });
     return {
       id: minted.id,
