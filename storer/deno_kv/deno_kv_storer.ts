@@ -102,11 +102,9 @@ export class DenoKVStorer implements Storer {
     return awardResult.value;
   }
 
-  /**
-   * TODO: Revise KV architecture to list perks and awards more efficiently.
-   */
   public async doListQuery(q: ListQuery): Promise<StoredSummary[]> {
     const summaries: StoredSummary[] = [];
+    // TODO: Revise KV architecture to list perks and awards more efficiently.
     for await (
       const awardResult of this.kv.list<Award>({
         prefix: makeAwardsKey(this.namespace),
