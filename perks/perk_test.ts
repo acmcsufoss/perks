@@ -23,10 +23,10 @@ const TEST_INFINITE_PERK: MintedPerk = {
 };
 
 const TEST_REAL_PERK: MintedPerk = {
-  id: "real_perk_id",
+  id: "1",
   minted_at: "2023-06-09T01:40:54.117Z",
   type: "breakfast",
-  minter_id: "real_perk_minter_id",
+  minter_id: "1",
   milliseconds: 0,
   max_uses: 0,
   available: 0,
