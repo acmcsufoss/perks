@@ -79,6 +79,14 @@ async function main() {
               "Internal Server Error",
               { status: 500 },
             );
+          })
+          .finally(async () => {
+            if (!ENV.dev) {
+              return;
+            }
+
+            const diagnosis = await store.doDiagnoseQuery();
+            console.log(diagnosis);
           });
       }
     }
