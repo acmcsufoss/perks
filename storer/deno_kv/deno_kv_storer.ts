@@ -168,7 +168,7 @@ export class DenoKVStorer implements Storer {
 
     const { timestamp } = makeNewOptions();
     const isAvailable = parseIsAvailable(perkResult.value, new Date(timestamp));
-    if (isAvailable) {
+    if (!isAvailable) {
       throw new Error(`Perk no longer available: ${q.award_id}`);
     }
 
